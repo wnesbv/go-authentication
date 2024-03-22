@@ -1,0 +1,170 @@
+package subscription
+
+import (
+    "database/sql"
+    "fmt"
+    "net/http"
+    "github.com/lib/pq"
+)
+
+// creat
+func userIdSsc(w http.ResponseWriter, id int) (i Subscription, err error) {
+    
+    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1", id)
+
+    err = row.Scan(
+        &i.Id,
+        &i.Title,
+        &i.Description,
+        &i.Owner,
+        &i.To_user,
+        &i.To_group,
+        &i.Completed,
+        &i.Created_at,
+        &i.Updated_at,
+    )
+
+    if err == sql.ErrNoRows {
+        fmt.Fprintf(w, "err sql.ErrNoRows..! : %+v\n", err)
+        return
+    } else if err != nil {
+        fmt.Fprintf(w, "err sql..! : %+v\n", err)
+        return
+    }
+
+    return i, err
+}
+
+// creat
+func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err error) {
+
+    // names,err := qsAdminGroupSsc(w,owner)
+    // if err != nil {
+    //     return
+    // }
+
+    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    if err != nil {
+        switch {
+            case true:
+            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
+            break
+        }
+        return
+    }
+    defer admin.Close()
+
+    var names []int
+    for admin.Next() {
+        i := new(Subscription)
+        err = admin.Scan(
+            &i.Id,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
+        }
+        names = append(names, i.Id)
+    }
+    
+    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1 AND to_group = ANY($2)", id, pq.Array(names))
+    
+    err = row.Scan(
+        &i.Id,
+        &i.Title,
+        &i.Description,
+        &i.Owner,
+        &i.To_user,
+        &i.To_group,
+        &i.Completed,
+        &i.Created_at,
+        &i.Updated_at,
+    )
+
+    if err == sql.ErrNoRows {
+        fmt.Fprintf(w, "err sql.ErrNoRows..! : %+v\n", err)
+        return
+    } else if err != nil {
+        fmt.Fprintf(w, "err sql..! : %+v\n", err)
+        return
+    }
+
+    return i, err
+}
+// ..
+
+
+// list
+func allSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+
+    defer rows.Close()
+    for rows.Next() {
+        i := new(Subscription)
+        err = rows.Scan(
+            &i.Id,
+            &i.Title,
+            &i.Description,
+            &i.Owner,
+            &i.To_user,
+            &i.To_group,
+            &i.Completed,
+            &i.Created_at,
+            &i.Updated_at,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
+            return
+        }
+        names = append(names, i)
+    }
+    return names, err
+}
+
+func userSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+
+    defer rows.Close()
+    for rows.Next() {
+        i := new(Subscription)
+        err = rows.Scan(
+            &i.Id,
+            &i.Title,
+            &i.Description,
+            &i.Owner,
+            &i.To_user,
+            &i.To_group,
+            &i.Completed,
+            &i.Created_at,
+            &i.Updated_at,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
+            return
+        }
+        names = append(names, i)
+    }
+    return names, err
+}
+
+func roomSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+
+    defer rows.Close()
+    for rows.Next() {
+        i := new(Subscription)
+        err = rows.Scan(
+            &i.Id,
+            &i.Title,
+            &i.Description,
+            &i.Owner,
+            &i.To_user,
+            &i.To_group,
+            &i.Completed,
+            &i.Created_at,
+            &i.Updated_at,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
+            return
+        }
+        names = append(names, i)
+    }
+    return names, err
+}
