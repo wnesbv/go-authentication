@@ -27,11 +27,11 @@ func Allarticle(w http.ResponseWriter, r *http.Request) {
 
         start := time.Now()
 
-        rows, err := qscArt(w)
+        rows,err := qArt(w)
         if err != nil {
             return
         }
-        names, err := allArt(w,rows)
+        names,err := allArt(w,rows)
         if err != nil {
             return
         }
@@ -59,11 +59,11 @@ func UsAllArt(w http.ResponseWriter, r *http.Request) {
         }
 
         owner := cls.User_id
-        rows, err := qsUserArt(w,owner)
+        rows,err := qsUserArt(w,owner)
         if err != nil {
             return
         }
-        names, err := userArt(w,rows)
+        names,err := userArt(w,rows)
         if err != nil {
             return
         }

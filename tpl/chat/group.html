@@ -3,18 +3,18 @@
 
 {{ block "content" . }}
 
-<h1>group 🗨️ Chat</h1>
+<h1 class="lead my-3">group 🗨️ Chat</h1>
 
 <div class="card">
 
     <div class="card-header">
-        <h2 class="lead">group: {{ .D.Title }}</h2>
+        <h2 class="lead"><small>group:</small> {{ .D.Title }}</h2>
     </div>
 
     <ul class="card-body list-group list-group-flush">
 
         <li class="list-group-item">
-            <sup>id:</sup> {{ .D.Id }}, <sup>author:</sup> {{ .D.Owner }}
+            <span class="badge text-bg-light">id:</span> {{ .D.Id }}, <span class="badge text-bg-light">author:</span> {{ .D.Owner }}
         </li>
         <li class="list-group-item">
             <sup>title:</sup> {{ .D.Title }}

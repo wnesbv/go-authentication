@@ -42,12 +42,12 @@ func DtlOwrSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        id, iderr := options.IdUrl(w,r)
-        if iderr != nil {
+        id,err := options.IdUrl(w,r)
+        if err != nil {
             return
         }
 
-        cls, err := authtoken.ListToken(w,r)
+        cls,err := authtoken.ListToken(w,r)
         if err != nil {
             return
         }

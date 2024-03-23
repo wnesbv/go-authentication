@@ -8,14 +8,9 @@
 {{ range . }}
 <ul class="list-group list-group-flush">
 
-	<li class="card">
-	<div class="card-header">
-	<a class="btn btn-outline-primary btn-sm" href="/group?id={{ .Id }}" role="button">
-		to chat
-	</a>
-	</div>
+	<li class="list-group-item">
+		<sup>Completed:</sup>  {{ .Completed }}
 	</li>
-
 	<li class="list-group-item">
 		<sup>id:</sup> {{ .Id }}, <sup>author:</sup> {{ .Owner }}
 	</li>
@@ -56,10 +51,6 @@
 
 	<li class="card my-2">
 	<div class="card-footer">
-
-	<a class="btn btn-outline-primary btn-sm" href="/addroom-ssc?id={{ .Id }}" role="button">
-		add subscription
-	</a>
 
 	<a class="btn btn-outline-primary btn-sm me-2" href="/detail-group?id={{ .Id }}" role="button">
 		details

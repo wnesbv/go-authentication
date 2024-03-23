@@ -7,9 +7,9 @@ import (
 )
 
 
-func qscArt(w http.ResponseWriter) (rows *sql.Rows, err error) {
+func qArt(w http.ResponseWriter) (rows *sql.Rows, err error) {
 
-    rows, err = db.Query("SELECT id, title, description, img, owner, completed, created_at, updated_at FROM article WHERE Completed=$1", true)
+    rows,err = db.Query("SELECT id, title, description, img, owner, completed, created_at, updated_at FROM article WHERE Completed=$1", true)
 
     if err != nil {
         switch {

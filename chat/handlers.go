@@ -93,11 +93,11 @@ func GrChat(w http.ResponseWriter, r *http.Request) {
 
     owner := cls.User_id
 
-    rows,err := qsGroupCh(w,owner,id)
+    rows,err := qGrCh(w,owner,id)
     if err != nil {
         return
     }
-    names,err := rmChat(w,rows,owner,id)
+    names,err := groupChat(w,rows,owner,id)
     if err != nil {
         return
     }
@@ -123,7 +123,7 @@ func GrAll(w http.ResponseWriter, r *http.Request) {
 
         if cls != nil && err == nil {
 
-        rows,err := qsGroup(w)
+        rows,err := qGroup(w)
         if err != nil {
             return
         }
@@ -131,7 +131,7 @@ func GrAll(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all_room.html", "./tpl/base.html" ))
+        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all_group.html", "./tpl/base.html" ))
         tpl.ExecuteTemplate(w, "base", names)
 
         }
@@ -141,13 +141,13 @@ func GrOwr(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        cls,tkerr := authtoken.ListToken(w,r)
+        cls,err := authtoken.ListToken(w,r)
 
-        if cls != nil && tkerr == nil {
+        if cls != nil && err == nil {
 
         owner := cls.User_id
 
-        rows,err := qsUserGroup(w,owner)
+        rows,err := qUsGroup(w,owner)
         if err != nil {
             return
         }
@@ -155,12 +155,12 @@ func GrOwr(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/owr_group.html", "./tpl/base.html" ))
+        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all_owr_group.html", "./tpl/base.html" ))
         tpl.ExecuteTemplate(w, "base", names)
 
         } else {
 
-        rows, err := qsGroup(w)
+        rows,err := qGroup(w)
         if err != nil {
             return
         }
@@ -192,10 +192,8 @@ func DtlGr(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        cls,err := options.WhoisWho(w,r)
-        if err != nil {
-            return
-        }
+        cls := authtoken.WhoisWho(w,r)
+        
         type ListData struct {
             Auth string
             I Group

@@ -109,9 +109,9 @@ func SqlToken(w http.ResponseWriter, r *http.Request) (claims *Claims, err error
 }
 
 
-func ListToken(w http.ResponseWriter, r *http.Request) (claims *Claims, tkerr error) {
+func ListToken(w http.ResponseWriter, r *http.Request) (*Claims, error) {
 
-    c, err := r.Cookie("Visitor")
+    c,err := r.Cookie("Visitor")
 
     cls := &Claims{}
 
@@ -119,12 +119,31 @@ func ListToken(w http.ResponseWriter, r *http.Request) (claims *Claims, tkerr er
     case errors.Is(err, http.ErrNoCookie):
         break
     default:
-        _, err = jwt.ParseWithClaims(c.Value, cls, func(token *jwt.Token) (interface{}, error) {
+        _,err = jwt.ParseWithClaims(c.Value, cls, func(token *jwt.Token) (interface{}, error) {
             return []byte(os.Getenv("JWT_SECRET")), nil
         })
     }
-    return cls, err
+    return cls,err
 }
+
+
+func WhoisWho(w http.ResponseWriter, r *http.Request) *Claims {
+
+    c,err := r.Cookie("Visitor")
+
+    cls := &Claims{}
+
+    switch {
+    case errors.Is(err, http.ErrNoCookie):
+        break
+    default:
+        _,err = jwt.ParseWithClaims(c.Value, cls, func(token *jwt.Token) (interface{}, error) {
+            return []byte(os.Getenv("JWT_SECRET")), nil
+        })
+    }
+    return cls
+}
+
 
 
 func BuildSend(w http.ResponseWriter, email string) (tkstr string, tkerr error) {

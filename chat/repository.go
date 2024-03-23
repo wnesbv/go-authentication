@@ -89,7 +89,7 @@ func qUsCh(w http.ResponseWriter, owner int, to_user int) (rows *sql.Rows, err e
 }
 
 
-func qsGroup(w http.ResponseWriter) (rows *sql.Rows, err error) {
+func qGroup(w http.ResponseWriter) (rows *sql.Rows, err error) {
 
     rows,err = db.Query("SELECT * FROM groups WHERE completed=$1", true)
 
@@ -105,7 +105,7 @@ func qsGroup(w http.ResponseWriter) (rows *sql.Rows, err error) {
 }
 
 
-func qsUserGroup(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
+func qUsGroup(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
 
     rows,err = db.Query("SELECT * FROM groups WHERE owner=$1", owner)
 
@@ -121,7 +121,7 @@ func qsUserGroup(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
 }
 
 
-func qsGroupCh(w http.ResponseWriter, owner int, to_group int) (rows *sql.Rows, err error) {
+func qGrCh(w http.ResponseWriter, owner int, to_group int) (rows *sql.Rows, err error) {
 
     rows,err = db.Query("SELECT * FROM msggroups WHERE owner=$1 AND to_group=$2 AND completed=$3", owner,to_group,true)
 

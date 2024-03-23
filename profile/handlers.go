@@ -5,7 +5,7 @@ import (
     "net/http"
     "html/template"
 
-    "go_authentication/options"
+    "go_authentication/authtoken"
 )
 
 
@@ -21,7 +21,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/profile/all.html", "./tpl/base.html" ))
 
-        rows, err := db.Query("SELECT user_id,username,email FROM users")
+        rows,err := db.Query("SELECT user_id,username,email FROM users")
 
         if err != nil {
             fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
@@ -29,15 +29,15 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         }
         defer rows.Close()
 
-        cls, err := options.WhoisWho(w,r)
-        if err != nil {
-            return
-        }
+        cls := authtoken.WhoisWho(w,r)
+
         type ListData struct {
             Auth string
             I []*UserList
         }
+
         if cls != nil {
+            
         var names []*UserList
         for rows.Next() {
             i := new(UserList)

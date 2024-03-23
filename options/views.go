@@ -6,25 +6,12 @@ import (
     "strconv"
     "net/http"
     "path/filepath"
-
-    "go_authentication/authtoken"
 )
-
-
-func WhoisWho(w http.ResponseWriter, r *http.Request) (claims *authtoken.Claims, err error) {
-
-    cls, tkerr := authtoken.ListToken(w,r)
-
-    if cls != nil && tkerr == nil {
-        return cls, err
-    }
-    return
-}
 
 
 func DelFolder(path string) (err error) {
     
-    contents, err := filepath.Glob(path)
+    contents,err := filepath.Glob(path)
     if err != nil {
         return
     }

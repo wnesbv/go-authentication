@@ -8,6 +8,7 @@ import (
 	"net/http"
 	
 	"go_authentication/options"
+	"go_authentication/authtoken"
 	"github.com/gorilla/websocket"
 )
 
@@ -61,10 +62,8 @@ func userCh() {
 
 func UsMsg(w http.ResponseWriter, r *http.Request) {
 
-    cls,err := options.WhoisWho(w,r)
-    if err != nil {
-        return
-    }
+    cls := authtoken.WhoisWho(w,r)
+    
     id,err := options.IdUrl(w,r)
     fmt.Println("id..", id)
     if err != nil {

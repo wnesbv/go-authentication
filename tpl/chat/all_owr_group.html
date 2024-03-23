@@ -3,14 +3,15 @@
 
 {{ block "content" . }}
 
-<h1 class="container lead my-2">owner group</h1>
+<h1 class="container lead my-2">all owner group</h1>
 	
 {{ range . }}
 <ul class="list-group list-group-flush">
 
 	<li class="list-group-item">
-	<span class="d-block"><sup>completed:</sup> {{ .Completed }}</span>
-	<sup>id:</sup> {{ .Id }}, <sup>author:</sup> {{ .Owner }}
+	<span class="d-block">
+		<span class="badge text-bg-primary">completed:</span> {{ .Completed }}</span>
+	<span class="badge text-bg-light">id:</span> {{ .Id }}, <span class="badge text-bg-light">author:</span> {{ .Owner }}
 	</li>
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .Title }}
