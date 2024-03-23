@@ -9,7 +9,7 @@ import (
 )
 
 
-func qrUsSscCh(w http.ResponseWriter, id int) (user []int,completed bool,err error) {
+func qSscChUs(w http.ResponseWriter, id int) (user []int,completed bool,err error) {
 
     row := db.QueryRow("SELECT id,owner,to_user,completed FROM subscription WHERE id=$1 AND completed=$2", id,true)
 
@@ -24,6 +24,38 @@ func qrUsSscCh(w http.ResponseWriter, id int) (user []int,completed bool,err err
 
     user = append(user,i.Owner,i.To_user)
     return user,i.Completed,err
+}
+
+
+func qSscGrChUs(w http.ResponseWriter, id int) (user []int,err error) {
+
+    rows,err := db.Query("SELECT owner,to_group,completed FROM subscription WHERE to_group=$1 AND completed=$2", id,true)
+
+    if err != nil {
+        switch {
+            case true:
+            fmt.Fprintf(w, "Error: qSscGrChUs Query()..! : %+v\n", err)
+            break
+        }
+        return
+    }
+
+    defer rows.Close()
+    for rows.Next() {
+        i := new(Subscription)
+        err = rows.Scan(
+            &i.Owner,
+            &i.To_group,
+            &i.Completed,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error qSscGrChUs Scan()..! : %+v\n", err)
+            return
+        }
+        user = append(user, i.Owner)
+    }
+    fmt.Println("user..", user)
+    return user, err
 }
 
 
@@ -121,9 +153,9 @@ func qUsGroup(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
 }
 
 
-func qGrCh(w http.ResponseWriter, owner int, to_group int) (rows *sql.Rows, err error) {
+func qGrChat(w http.ResponseWriter, to_group int) (rows *sql.Rows, err error) {
 
-    rows,err = db.Query("SELECT * FROM msggroups WHERE owner=$1 AND to_group=$2 AND completed=$3", owner,to_group,true)
+    rows,err = db.Query("SELECT * FROM msggroups WHERE to_group=$1 AND completed=$2", to_group,true)
 
     if err != nil {
         switch {

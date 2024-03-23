@@ -106,7 +106,7 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func DeleteArt(w http.ResponseWriter, r *http.Request) {
+func DelArt(w http.ResponseWriter, r *http.Request) {
 
     id,err := options.IdUrl(w,r)
     if err != nil {

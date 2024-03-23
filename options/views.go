@@ -9,6 +9,16 @@ import (
 )
 
 
+func InSlice(i int, user []int) bool {
+    for _, s := range user {
+        if s == i {
+            return true
+        }
+    }
+    return false
+}
+
+
 func DelFolder(path string) (err error) {
     
     contents,err := filepath.Glob(path)

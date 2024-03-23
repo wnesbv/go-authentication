@@ -25,7 +25,7 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
     }
 
     // detail..
-    user,completed,err := qrUsSscCh(w,id)
+    user,completed,err := qSscChUs(w,id)
     if err != nil {
         return
     }
@@ -66,6 +66,7 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+
 func GrChat(w http.ResponseWriter, r *http.Request) {
 
     cls,err := authtoken.OnToken(w,r)
@@ -75,7 +76,6 @@ func GrChat(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         return
     }
-
     id,err := options.IdUrl(w,r)
     if err != nil {
         return
@@ -91,27 +91,41 @@ func GrChat(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    owner := cls.User_id
-
-    rows,err := qGrCh(w,owner,id)
-    if err != nil {
-        return
-    }
-    names,err := groupChat(w,rows,owner,id)
+    user,err := qSscGrChUs(w,id)
     if err != nil {
         return
     }
 
-    data := ListData {
-        I: names,
-        D: idname,
+    i := options.InSlice(cls.User_id,user)
+    if i {
+
+        // msg..
+        rows,err := qGrChat(w,id)
+        if err != nil {
+            return
+        }
+        names,err := groupChat(w,rows,id)
+        if err != nil {
+            return
+        }
+        // ..
+
+        data := ListData {
+            I: names,
+            D: idname,
+        }
+
+        if r.Method == "GET" {
+            tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/group.html", "./tpl/base.html" ))
+
+            tpl.ExecuteTemplate(w, "base", data)
+        }
+
+    } else {
+        fmt.Fprintf(w, "User No Group..! : %+v\n", err)
     }
 
-    if r.Method == "GET" {
-        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/group.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", data)
-    }
 }
 
 

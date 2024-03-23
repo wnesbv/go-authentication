@@ -36,7 +36,7 @@ func main() {
 	http.HandleFunc("/author-id-article", article.UsAllArt)
 	http.HandleFunc("/creativity", article.Creativity)
 	http.HandleFunc("/update-art", article.UpArt)
-	http.HandleFunc("/delete-art", article.DeleteArt)
+	http.HandleFunc("/delete-art", article.DelArt)
 	http.HandleFunc("/img-art", article.ImgArt)
 	http.HandleFunc("/del-img-art", article.DelImgArt)
 	http.HandleFunc("/csv-imp-art", sqlcsv.CsvImpArt)

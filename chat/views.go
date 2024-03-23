@@ -145,7 +145,7 @@ func idGroup(w http.ResponseWriter, id int) (i Group, err error) {
 }
 
 
-func groupChat(w http.ResponseWriter, rows *sql.Rows, owner int, to_group int) (names []*MsgGroup, err error) {
+func groupChat(w http.ResponseWriter, rows *sql.Rows,to_group int) (names []*MsgGroup,err error) {
 
     defer rows.Close()
     for rows.Next() {

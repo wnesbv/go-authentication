@@ -15,6 +15,7 @@ type Subscription struct {
     Id int
     Owner int
     To_user int
+    To_group int
     Completed bool
 }
 
