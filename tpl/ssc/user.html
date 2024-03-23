@@ -3,34 +3,39 @@
 
 {{ block "content" . }}
 
-<h1 class="container lead my-2">to user subscription</h1>
+<h1 class="container lead my-3">to user subscription</h1>
 	
 {{ range . }}
+
+<div class="card">
+
+<div class="card-header">
+<a class="btn btn-outline-primary btn-sm" href="/user?id={{ .Id }}" role="button">
+	<span class="badge text-bg-primary">to chat user</span> {{ .Id }}
+</a>
+</div>
+
+<div class="card-body">
+
 <ul class="list-group list-group-flush">
 
-	<li class="card">
-		<div class="card-header">
-		<a class="btn btn-outline-primary btn-sm" href="/user?id={{ .Id }}" role="button">
-			<sup>to user chat:</sup> {{ .Id }}
-		</a>
-	</div>
+	<li class="list-group-item">
+		{{ if ne .To_user nil }}
+		<span class="badge text-bg-light">to user:</span> {{ .To_user }}
+		{{ else }}
+		<span class="badge text-bg-light">to group:</span> {{ .To_group }}
+		{{ end }}
 	</li>
 
 	<li class="list-group-item">
-		<sup>id:</sup> {{ .Id }},
-		<sup>owner:</sup> {{ .Owner }}
+		<span class="badge text-bg-light">id:</span> {{ .Id }},
+		<span class="badge text-bg-light">owner:</span> {{ .Owner }}
 	</li>
+
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .Title }}
 	</li>
 
-	<li class="list-group-item">
-		{{ if ne .To_user nil }}
-		<sup>to user:</sup> {{ .To_user }}
-		{{ else }}
-		<sup>to group:</sup> {{ .To_group }}
-		{{ end }}
-	</li>
 	<li class="list-group-item">
 		<sup>completed:</sup> {{ .Completed }}
 	</li>
@@ -52,14 +57,14 @@
 		there are no updates
 	{{ end }}
 	</li>
-
 </ul>
 
-<div class="card">
 <div class="card-footer">
 <a class="btn btn-outline-primary btn-sm m-2" href="/user-ssc?id={{ .Id }}" role="button">
 	accept subscription
 </a>
+</div>
+
 </div>
 </div>
 

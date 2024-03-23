@@ -6,12 +6,18 @@
 <h1 class="container lead my-2">all owner group</h1>
 	
 {{ range . }}
+
+<div class="card">
+	
+<div class="card-body">
 <ul class="list-group list-group-flush">
 
 	<li class="list-group-item">
 	<span class="d-block">
-		<span class="badge text-bg-primary">completed:</span> {{ .Completed }}</span>
-	<span class="badge text-bg-light">id:</span> {{ .Id }}, <span class="badge text-bg-light">author:</span> {{ .Owner }}
+		<span class="badge text-bg-primary">completed:</span> {{ .Completed }}
+	</span>
+	<span class="badge text-bg-light">id:</span> {{ .Id }},
+	<span class="badge text-bg-light">author:</span> {{ .Owner }}
 	</li>
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .Title }}
@@ -47,16 +53,18 @@
 		there are no updates
 	{{ end }}
 	</li>
-
 </ul>
+</div>
 
-<div class="card my-2">
-<div class="card-body">
-<a class="btn btn-outline-primary btn-sm me-2" href="/detail-group?id={{.Id}}" role="button">
+<div class="card-footer">
+<a class="btn btn-outline-primary btn-sm" href="/detail-group?id={{ .Id }}" role="button">
 	details
 </a>
 </div>
+
 </div>
+
+<hr>
 
 {{ end }}
 	  

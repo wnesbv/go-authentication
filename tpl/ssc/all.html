@@ -6,27 +6,32 @@
 <h1 class="container lead my-2">all subscription</h1>
 	
 {{ range . }}
+
+<div class="card">
+<div class="card-body">
+	
 <ul class="list-group list-group-flush">
 
 	<li class="list-group-item">
-		<sup>id:</sup> {{ .Id }},
-		<sup>owner:</sup> {{ .Owner }}
-	</li>
-	<li class="list-group-item">
-		<sup>title:</sup> {{ .Title }}
+		<span class="badge text-bg-primary">completed:</span> {{ .Completed }}
 	</li>
 
 	<li class="list-group-item">
 		{{ if ne .To_user nil }}
-		<sup>to user:</sup> {{ .To_user }}
+		<span class="badge text-bg-light">to user:</span> {{ .To_user }}
 		{{ else }}
-		<sup>to group:</sup> {{ .To_group }}
+		<span class="badge text-bg-light">to group:</span> {{ .To_group }}
 		{{ end }}
 	</li>
-	<li class="list-group-item">
-		<sup>completed:</sup> {{ .Completed }}
-	</li>
 
+	<li class="list-group-item">
+		<span class="badge text-bg-light">id:</span> {{ .Id }},
+		<span class="badge text-bg-light">owner:</span> {{ .Owner }}
+	</li>
+	
+	<li class="list-group-item">
+		<sup>title:</sup> {{ .Title }}
+	</li>
 
 	<li class="list-group-item">
 	<sup>created:</sup>
@@ -44,8 +49,9 @@
 		there are no updates
 	{{ end }}
 	</li>
-
 </ul>
+</div>
+</div>
 
 <hr>
 

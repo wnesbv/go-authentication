@@ -3,40 +3,43 @@
 
 {{ block "content" . }}
 
-<h1 class="container lead my-2">owner subscription</h1>
+<h1 class="container lead my-3">owner subscription</h1>
 	
 {{ range . }}
+
+<div class="card">
+
+<div class="card-header">
+{{ if ne .To_user nil }}
+<a class="btn btn-outline-primary btn-sm" href="/user?id={{ .Id }}" role="button">
+	<span class="badge text-bg-primary">to chat user</span> {{ .Id }}
+</a>
+{{ else }}
+<a class="btn btn-outline-primary btn-sm" href="/group?id={{ .Id }}" role="button">
+	<span class="badge text-bg-primary">to chat group</span> {{ .To_group }}
+</a>
+{{ end }}
+</div>
+
+<div class="card-body">
 <ul class="list-group list-group-flush">
 
-	<li class="card">
-		<div class="card-header">
+	<li class="list-group-item">
 		{{ if ne .To_user nil }}
-		<a class="btn btn-outline-primary btn-sm" href="/user?id={{ .Id }}" role="button">
-			<sup>to user chat:</sup> {{ .Id }}
-		</a>
+		<span class="badge text-bg-light">to user:</span> {{ .To_user }}
 		{{ else }}
-		<a class="btn btn-outline-primary btn-sm" href="/group?id={{ .Id }}" role="button">
-			<sup>to group chat:</sup> {{ .To_group }}
-		</a>
+		<span class="badge text-bg-light">to group:</span> {{ .To_group }}
 		{{ end }}
-	</div>
 	</li>
 
 	<li class="list-group-item">
-		<sup>id:</sup> {{ .Id }},
-		<sup>owner:</sup> {{ .Owner }}
+		<span class="badge text-bg-light">id:</span> {{ .Id }},
+		<span class="badge text-bg-light">owner:</span> {{ .Owner }}
 	</li>
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .Title }}
 	</li>
 
-	<li class="list-group-item">
-		{{ if ne .To_user nil }}
-		<sup>to user:</sup> {{ .To_user }}
-		{{ else }}
-		<sup>to group:</sup> {{ .To_group }}
-		{{ end }}
-	</li>
 	<li class="list-group-item">
 		<sup>completed:</sup> {{ .Completed }}
 	</li>
@@ -58,16 +61,18 @@
 		there are no updates
 	{{ end }}
 	</li>
-
-	<li class="card">
-	<div class="card-footer">
-	<a class="btn btn-outline-primary btn-sm me-2" href="/detail-ssc?id={{ .Id }}" role="button">
-		details
-	</a>
-	</div>
-	</li>
-
 </ul>
+</div>
+
+<div class="card-footer">
+<a class="btn btn-outline-primary btn-sm" href="/detail-ssc?id={{ .Id }}" role="button">
+	details
+</a>
+</div>
+
+</div>
+
+<hr>
 
 {{ end }}
 	  

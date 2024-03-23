@@ -5,7 +5,6 @@
 
 <h1 class="container lead my-3">details subscription: {{ .I.Title }}</h1>
 
-
 <div class="card">
 
 <span class="card-header">author: {{ .Auth }}</span>
@@ -13,7 +12,11 @@
 <ul class="card-body list-group list-group-flush">
 
 	<li class="list-group-item">
-		<sup>id:</sup> {{ .I.Id }}, <sup>author:</sup> {{ .I.Owner }}
+		<span class="badge text-bg-primary">completed:</span> {{ .I.Completed }}
+	</li>
+	<li class="list-group-item">
+		<span class="badge text-bg-light">id:</span> {{ .I.Id }}
+		<span class="badge text-bg-light">author:</span> {{ .I.Owner }}
 	</li>
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .I.Title }}
@@ -39,23 +42,17 @@
 		there are no updates
 	{{ end }}
 	</li>
-
 </ul>
 
-</div>
-
-
-<div class="card my-2">
 <div class="card-header">
-
 <a class="btn btn-outline-primary btn-sm me-2" href="/update-group?id={{ .I.Id }}" role="button">
     <i class="bi bi-pencil"></i> &raquo;
 </a>
 <a class="btn btn-outline-danger btn-sm" href="/delete-group?id={{ .I.Id }}" role="button">
     <i class="bi bi-trash3"></i> &raquo;
 </a>
-
 </div>
+
 </div>
 
 {{ end }}
