@@ -12,35 +12,32 @@ import (
 )
 
 
-func idUs(w http.ResponseWriter, users []int, completed bool) (names []*ChUser, err error) {
+func idUs(w http.ResponseWriter, list []int) (names []*ChUser, err error) {
 
-    if completed == true {
-        rows,err := db.Query("SELECT user_id,username,email FROM users WHERE user_id = ANY($1)", pq.Array(users))
+    rows,err := db.Query("SELECT user_id,username,email FROM users WHERE user_id = ANY($1)", pq.Array(list))
 
-        if err != nil {
-            switch {
-                case true:
-                fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
-                break
-            }
+    if err != nil {
+        switch {
+            case true:
+            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
+            break
         }
-
-        defer rows.Close()
-        for rows.Next() {
-            i := new(ChUser)
-            err = rows.Scan(
-                &i.User_id,
-                &i.Username,
-                &i.Email,
-            )
-            if err != nil {
-                fmt.Fprintf(w, "Error idUs Scan()..! : %+v\n", err)
-            }
-            names = append(names, i)
-        }
-        return names,err
     }
-    return
+
+    defer rows.Close()
+    for rows.Next() {
+        i := new(ChUser)
+        err = rows.Scan(
+            &i.User_id,
+            &i.Username,
+            &i.Email,
+        )
+        if err != nil {
+            fmt.Fprintf(w, "Error idUs Scan()..! : %+v\n", err)
+        }
+        names = append(names, i)
+    }
+    return names,err
 }
 
 

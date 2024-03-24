@@ -9,8 +9,8 @@ import (
 )
 
 
-func InSlice(i int, user []int) bool {
-    for _, s := range user {
+func InSlice(i int, list []int) bool {
+    for _, s := range list {
         if s == i {
             return true
         }

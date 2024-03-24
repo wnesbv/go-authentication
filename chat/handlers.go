@@ -25,17 +25,18 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
     }
 
     // detail..
-    user,completed,err := qSscChUs(w,id)
+    list,err := qSscChUs(w,id)
     if err != nil {
         return
     }
-    in_user,err := idUs(w,user,completed)
+    in_users,err := idUs(w,list)
     if err != nil {
         return
     }
     // ..
 
-    rows,err := qUsCh(w,cls.User_id,id)
+    // list..
+    rows,err := qUsCh(w,id)
     if err != nil {
         return
     }
@@ -56,7 +57,7 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
         I: names,
         Uid: cls.User_id,
         Uemail: cls.Email,
-        T: in_user,
+        T: in_users,
     }
 
     if r.Method == "GET" {

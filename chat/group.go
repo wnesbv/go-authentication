@@ -83,7 +83,7 @@ func GrMsg(w http.ResponseWriter, r *http.Request) {
 
 	register <- conn
 
-	sqlStatement := `INSERT INTO msggroups (coming, owner, to_group, completed, created_at) VALUES ($1,$2,$3,$4,$5)`
+	sqlStatement := "INSERT INTO msggroups (coming,owner,to_group, completed,created_at) VALUES ($1,$2,$3,$4,$5)"
 
 	for {
 		var message Message
@@ -94,7 +94,7 @@ func GrMsg(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("msg groups message..", message.Message)
 
-    	_,err = db.Exec(sqlStatement, message.Message, cls.User_id, id, true, time.Now())
+    	_,err = db.Exec(sqlStatement, message.Message,cls.User_id,id,true,time.Now())
 
 		if err != nil {
 			fmt.Println("err msg groups Exec()", err)

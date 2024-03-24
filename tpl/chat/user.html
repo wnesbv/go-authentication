@@ -5,13 +5,11 @@
 
 <h1 class="lead m-3">🗨️ Chat <small>user: ( {{ .Uid }}, {{ .Uemail }} )</small></h1>
 
-<ul class="card">
+<div class="card p-2 mb-2">
     {{ range .T }}
-    <li class="card-body">
         to: ( {{ .User_id }}, {{ .Email }} )
-    </li>
     {{ end }}
-</ul>
+</div>
 
 <div class="card">
     {{ range .I }}

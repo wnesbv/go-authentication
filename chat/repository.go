@@ -9,7 +9,7 @@ import (
 )
 
 
-func qSscChUs(w http.ResponseWriter, id int) (user []int,completed bool,err error) {
+func qSscChUs(w http.ResponseWriter, id int) (list []int,err error) {
 
     row := db.QueryRow("SELECT id,owner,to_user,completed FROM subscription WHERE id=$1 AND completed=$2", id,true)
 
@@ -22,12 +22,35 @@ func qSscChUs(w http.ResponseWriter, id int) (user []int,completed bool,err erro
         fmt.Fprintf(w, "user err sql..! : %+v\n", err)
     }
 
-    user = append(user,i.Owner,i.To_user)
-    return user,i.Completed,err
+    list = append(list, i.Owner,i.To_user)
+    fmt.Println("user list..", list)
+    return list,err
 }
 
 
-func qSscGrChUs(w http.ResponseWriter, id int) (user []int,err error) {
+func qUsCh(w http.ResponseWriter, id int) (rows *sql.Rows,err error) {
+
+    list,err := qSscChUs(w,id)
+    if err != nil {
+        return
+    }
+
+    rows,err = db.Query("SELECT id,coming,img,owner,to_user,completed,created_at,updated_at FROM msguser WHERE owner = ANY($1) AND to_user=$2 AND completed=$3", pq.Array(list),id,true)
+
+    if err != nil {
+        switch {
+            case true:
+            fmt.Fprintf(w, "Error: qUsCh Query()..! : %+v\n", err)
+            break
+        }
+        return
+    }
+
+    return rows,err
+}
+
+
+func qSscGrChUs(w http.ResponseWriter, id int) (list []int,err error) {
 
     rows,err := db.Query("SELECT owner,to_group,completed FROM subscription WHERE to_group=$1 AND completed=$2", id,true)
 
@@ -52,73 +75,12 @@ func qSscGrChUs(w http.ResponseWriter, id int) (user []int,err error) {
             fmt.Fprintf(w, "Error qSscGrChUs Scan()..! : %+v\n", err)
             return
         }
-        user = append(user, i.Owner)
+        list = append(list, i.Owner)
     }
-    fmt.Println("user..", user)
-    return user, err
+    fmt.Println("group list..", list)
+    return list,err
 }
 
-
-func qUsCh(w http.ResponseWriter, owner int, to_user int) (rows *sql.Rows, err error) {
-
-    rows1,err := db.Query("SELECT id FROM msguser WHERE owner=$1 AND to_user=$2 AND completed=$3", owner,to_user,true)
-    rows2,err := db.Query("SELECT id FROM msguser WHERE owner=$1 AND to_user=$2 AND completed=$3", to_user,owner,true)
-
-    if err != nil {
-        switch {
-            case true:
-            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
-            break
-        }
-        return
-    }
-
-    defer rows1.Close()
-    var obj1 []int
-    for rows1.Next() {
-        i := new(MsgUser)
-        err = rows1.Scan(
-            &i.Id,
-        )
-        if err != nil {
-            fmt.Fprintf(w, "Error qUsCh Scan()..! : %+v\n", err)
-            return
-        }
-        obj1 = append(obj1, i.Id)
-    }
-    fmt.Println("obj1", obj1)
-
-    defer rows2.Close()
-    var obj2 []int
-    for rows2.Next() {
-        i := new(MsgUser)
-        err = rows2.Scan(
-            &i.Id,
-        )
-        if err != nil {
-            fmt.Fprintf(w, "Error qUsCh 2 Scan()..! : %+v\n", err)
-            return
-        }
-        obj2 = append(obj2, i.Id)
-    }
-    fmt.Println("obj2", obj2)
-
-    var names []int
-    names = append(obj1, obj2...)
-
-    rows,err = db.Query("SELECT * FROM msguser WHERE id = ANY($1)", pq.Array(names))
-
-    if err != nil {
-        switch {
-            case true:
-            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
-            break
-        }
-        return
-    }
-
-    return rows, err
-}
 
 
 func qGroup(w http.ResponseWriter) (rows *sql.Rows, err error) {
@@ -133,7 +95,7 @@ func qGroup(w http.ResponseWriter) (rows *sql.Rows, err error) {
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 
@@ -149,7 +111,7 @@ func qUsGroup(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 
@@ -165,7 +127,7 @@ func qGrChat(w http.ResponseWriter, to_group int) (rows *sql.Rows, err error) {
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 
