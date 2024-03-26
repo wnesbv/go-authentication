@@ -23,7 +23,6 @@ func qSscChUs(w http.ResponseWriter, id int) (list []int,err error) {
     }
 
     list = append(list, i.Owner,i.To_user)
-    fmt.Println("user list..", list)
     return list,err
 }
 

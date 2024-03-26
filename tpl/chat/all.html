@@ -3,16 +3,17 @@
 
 {{ block "content" . }}
 
-<h1 class="container lead my-2">all group</h1>
+<h1 class="container lead my-3">all group</h1>
 	
 {{ range . }}
 <ul class="list-group list-group-flush">
 
 	<li class="list-group-item">
-		<sup>Completed:</sup>  {{ .Completed }}
+		<span class="badge text-bg-primary">Completed:</span>  {{ .Completed }}
 	</li>
 	<li class="list-group-item">
-		<sup>id:</sup> {{ .Id }}, <sup>author:</sup> {{ .Owner }}
+		<span class="badge text-bg-light">id:</span> {{ .Id }}
+		<span class="badge text-bg-light">author:</span> {{ .Owner }}
 	</li>
 	<li class="list-group-item">
 		<sup>title:</sup> {{ .Title }}

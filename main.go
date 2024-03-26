@@ -9,6 +9,7 @@ import (
 
 	"go_authentication/chat"
 	"go_authentication/sqlcsv"
+	"go_authentication/search"
 	"go_authentication/profile"
 	"go_authentication/article"
 	"go_authentication/owner_ssc"
@@ -72,6 +73,9 @@ func main() {
 
 	http.HandleFunc("/all-touser-ssc", subscription.ToUsAllSsc)
 	http.HandleFunc("/all-toroom-ssc", subscription.ToGroupAllSsc)
+
+	// search..
+	http.HandleFunc("/search", search.SearchHandler)
 
 	http.HandleFunc("/onauth", article.OnAuth)
 
