@@ -18,12 +18,12 @@ func AllSsc(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        names,err := allSsc(w,rows)
+        list,err := allSsc(w, rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/ssc/all.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }
 
@@ -42,16 +42,16 @@ func ToUsAllSsc(w http.ResponseWriter, r *http.Request) {
 
         to_user := cls.User_id
 
-        rows,err := qsUserAllSsc(w,to_user)
+        rows,err := qsUserAllSsc(w, to_user)
         if err != nil {
             return
         }
-        names,err := userSsc(w,rows)
+        list,err := userSsc(w, rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/ssc/user.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }
 
@@ -69,15 +69,15 @@ func ToGroupAllSsc(w http.ResponseWriter, r *http.Request) {
 
         owner := cls.User_id
 
-        rows,err := qsGroupAllSsc(w,owner)
+        rows,err := qsGroupAllSsc(w, owner)
         if err != nil {
             return
         }
-        names,err := roomSsc(w,rows)
+        list,err := roomSsc(w, rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/ssc/group.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }

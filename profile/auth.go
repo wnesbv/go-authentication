@@ -119,7 +119,7 @@ func AuthToken(w http.ResponseWriter, r *http.Request) {
 
     tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/auth/auth.html", "./tpl/base.html" ))
 
-    c, err := r.Cookie("Visitor")
+    c,err := r.Cookie("Visitor")
     if err != nil {
         if err == http.ErrNoCookie {
             w.WriteHeader(http.StatusUnauthorized)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"runtime"
 
 	_ "github.com/lib/pq"
 
@@ -33,7 +34,7 @@ func main() {
 	// art..
 	http.HandleFunc("/article", article.HomeArticle)
 	http.HandleFunc("/allarticle", article.Allarticle)
-	http.HandleFunc("/detail-art", article.DtlArt)
+	http.HandleFunc("/detail-art", article.DetArt)
 	http.HandleFunc("/author-id-article", article.UsAllArt)
 	http.HandleFunc("/creativity", article.Creativity)
 	http.HandleFunc("/update-art", article.UpArt)
@@ -47,7 +48,7 @@ func main() {
 	http.HandleFunc("/chat", chat.HomeChat)
 	http.HandleFunc("/all-group", chat.GrAll)
 	http.HandleFunc("/owner-group", chat.GrOwr)
-	http.HandleFunc("/detail-group", chat.DtlGr)
+	http.HandleFunc("/detail-group", chat.DetGr)
 	
 	http.HandleFunc("/creat-group", chat.Creativity)
 	http.HandleFunc("/update-group", chat.UpGr)
@@ -59,7 +60,7 @@ func main() {
 
 	// owner subscription..
 	http.HandleFunc("/all-ssc", owner_ssc.OwrAllSsc)
-	http.HandleFunc("/detail-ssc", owner_ssc.DtlOwrSsc)
+	http.HandleFunc("/detail-ssc", owner_ssc.DetOwrSsc)
 	http.HandleFunc("/del-ssc", owner_ssc.OwrDelSsc)
 	
 	http.HandleFunc("/adduser-ssc", owner_ssc.AddSscUs)
@@ -83,6 +84,9 @@ func main() {
 	dir := http.Dir("./sfl/static")
 	fls := http.FileServer(dir)
 	http.Handle("/static/", http.StripPrefix("/static", fls))
+	
+
+	fmt.Println("main goroutine..", runtime.NumGoroutine())
 
 	fmt.Println("Server is running on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

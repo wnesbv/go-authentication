@@ -7,7 +7,7 @@ import (
 )
 
 
-func owSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+func owSsc(w http.ResponseWriter, rows *sql.Rows) (list []*Subscription, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -27,9 +27,9 @@ func owSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err er
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names,err
+    return list,err
 }
 
 

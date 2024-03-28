@@ -10,11 +10,12 @@ import (
     
     "github.com/golang-jwt/jwt/v5"
 
+    "go_authentication/connect"
     "go_authentication/authtoken"
 )
 
 
-func allArt(w http.ResponseWriter, rows *sql.Rows) (names []*Article, err error) {
+func allArt(w http.ResponseWriter, rows *sql.Rows) (list []*Article, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -33,13 +34,13 @@ func allArt(w http.ResponseWriter, rows *sql.Rows) (names []*Article, err error)
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list, err
 }
 
 
-func userArt(w http.ResponseWriter, rows *sql.Rows) (names []*Article, err error) {
+func userArt(w http.ResponseWriter, rows *sql.Rows) (list []*Article, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -58,7 +59,7 @@ func userArt(w http.ResponseWriter, rows *sql.Rows) (names []*Article, err error
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
 
     // if qerr = rows.Close(); qerr != nil {
@@ -78,7 +79,7 @@ func userArt(w http.ResponseWriter, rows *sql.Rows) (names []*Article, err error
     //     return
     // }
 
-    return names, err
+    return list, err
 }
 
 
@@ -88,7 +89,8 @@ func authorArt(w http.ResponseWriter, r *http.Request, claims *authtoken.Claims,
     i = new(Article)
     owner := claims.User_id
     
-    row := db.QueryRow("SELECT * FROM article WHERE id=$1 AND owner=$2", id,owner)
+    conn := connect.Conn()
+    row := conn.QueryRow("SELECT * FROM article WHERE id=$1 AND owner=$2", id,owner)
 
     err = row.Scan(
         &i.Id,
@@ -109,13 +111,14 @@ func authorArt(w http.ResponseWriter, r *http.Request, claims *authtoken.Claims,
         return
     }
 
-    return i, err
+    return i,err
 }
 
 
 func idArt(w http.ResponseWriter, id int) (i Article, err error) {
     
-    row := db.QueryRow("SELECT * FROM article WHERE id=$1", id)
+    conn := connect.Conn()
+    row := conn.QueryRow("SELECT * FROM article WHERE id=$1", id)
 
     err = row.Scan(
         &i.Id,

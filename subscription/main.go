@@ -5,6 +5,7 @@ import (
 	"time"
 	"fmt"
     "os"
+    "runtime"
 	
     _ "github.com/lib/pq"
     "github.com/joho/godotenv"
@@ -25,7 +26,7 @@ func connsubscription() {
     connstr := os.Getenv("DATABASE_URL")
 
     var err error
-    db, err = sql.Open("postgres", connstr)
+    db,err = sql.Open("postgres", connstr)
     if err != nil {
         fmt.Println("err: sql.Open() subscription", err)
     }
@@ -50,4 +51,6 @@ func init() {
 
     elapsed := time.Since(start)
     fmt.Printf(" sql subscription time.. :  %s \n", elapsed)
+
+    fmt.Println(" subscription goroutine..", runtime.NumGoroutine())
 }

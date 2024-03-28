@@ -12,7 +12,7 @@ import (
     if err != nil {
         return
     }
-    list,err := searcArt(w,rows)
+    list,err := searcArt(w, rows)
     if err != nil {
         return
     }

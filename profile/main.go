@@ -5,6 +5,7 @@ import (
     "time"
     "fmt"
     "os"
+    "runtime"
 
     _ "github.com/lib/pq"
     "github.com/joho/godotenv"
@@ -12,7 +13,6 @@ import (
 
 
 var db *sql.DB
-
 
 func connprof() {
     if err := godotenv.Load(); err != nil {
@@ -26,7 +26,7 @@ func connprof() {
     connstr := os.Getenv("DATABASE_URL")
 
     var err error
-    db, err = sql.Open("postgres", connstr)
+    db,err = sql.Open("postgres", connstr)
     if err != nil {
         fmt.Println("err: sql.Open() profile", err)
     }
@@ -51,4 +51,6 @@ func init() {
 
     elapsed := time.Since(start)
     fmt.Printf(" sql profile time.. :  %s \n", elapsed)
+
+    fmt.Println(" profile goroutine..", runtime.NumGoroutine())
 }

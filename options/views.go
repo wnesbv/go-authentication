@@ -56,5 +56,5 @@ func IdUrl(w http.ResponseWriter, r *http.Request) (id int, err error) {
         http.NotFound(w,r)
         return
     }
-    return id, err
+    return id,err
 }

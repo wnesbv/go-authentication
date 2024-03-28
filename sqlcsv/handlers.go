@@ -16,18 +16,18 @@ import (
 /*func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
-        cls, tkerr := authtoken.OnToken(w,r)
 
+        cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
         }
-        if tkerr != nil {
+        if err != nil {
             return
         }
 
         owner := cls.User_id
         
-        rows, err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -50,18 +50,18 @@ import (
 /*func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
-        cls, tkerr := authtoken.OnToken(w,r)
 
+        cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
         }
-        if tkerr != nil {
+        if err != nil {
             return
         }
 
         owner := cls.User_id
         
-        rows, err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -73,7 +73,7 @@ import (
         }
         defer rows.Close()
         
-        columns, err := rows.Columns()
+        columns,err := rows.Columns()
         if err != nil {
             fmt.Println("Error getting column names:", err)
             return
@@ -126,18 +126,18 @@ import (
 func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
-        cls, tkerr := authtoken.OnToken(w,r)
 
+        cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
         }
-        if tkerr != nil {
+        if err != nil {
             return
         }
 
         owner := cls.User_id
         
-        rows, err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -154,13 +154,13 @@ func CsvImpArt(w http.ResponseWriter, r *http.Request) {
             fmt.Println("Error os.MkdirAll():", mkdirerr)
         }
 
-        file, err := os.Create("./static/csv/" + cls.Email + "/data.csv")
+        file,err := os.Create("./static/csv/" + cls.Email + "/data.csv")
         if err != nil {
             fmt.Println("Error os.Create():", err)
         }
         defer file.Close()
         
-        columns, err := rows.Columns()
+        columns,err := rows.Columns()
         if err != nil {
             fmt.Println("Error getting column names:", err)
             return
@@ -206,15 +206,15 @@ func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
 func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
-    if r.Method == "GET" {
+    cls,err := authtoken.OnToken(w,r)
+    if cls == nil {
+        return
+    }
+    if err != nil {
+        return
+    }
 
-        cls, tkerr := authtoken.OnToken(w,r)
-        if cls == nil {
-            return
-        }
-        if tkerr != nil {
-            return
-        }
+    if r.Method == "GET" {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/export.html", "./tpl/base.html" ))
         tpl.ExecuteTemplate(w, "base", nil)
@@ -224,13 +224,6 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
-        cls, tkerr := authtoken.OnToken(w,r)
-        if cls == nil {
-            return
-        }
-        if tkerr != nil {
-            return
-        }
         owner := cls.User_id
 
         file, handler, err := r.FormFile("file")
@@ -247,7 +240,7 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
         fmt.Printf("MIME Header : %+v\n" , handler.Header)
 
         reader := csv.NewReader(file)
-        rows, err := reader.ReadAll()
+        rows,err := reader.ReadAll()
         if err != nil {
             w.WriteHeader(http.StatusBadRequest)
             fmt.Fprintf(w, "err ReadAll()..! : %+v\n", err)
@@ -280,23 +273,23 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        cls, tkerr := authtoken.OnToken(w,r)
+        cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
         }
-        if tkerr != nil {
+        if err != nil {
             return
         }
         owner := cls.User_id
 
-        file, err := os.Open("report.csv")
+        file,err := os.Open("report.csv")
         if err != nil {
             fmt.Println("os.Open()..", err)
         }
         defer file.Close()
 
         reader := csv.NewReader(file)
-        rows, err := reader.ReadAll()
+        rows,err := reader.ReadAll()
         if err != nil {
             fmt.Println("reader.ReadAll()..", err)
         }

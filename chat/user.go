@@ -83,7 +83,7 @@ func UsMsg(w http.ResponseWriter, r *http.Request) {
 
 	us_register <- conn
 
-	sqlStatement := "INSERT INTO msguser (coming,owner,to_user,completed, created_at) VALUES ($1,$2,$3,$4,$5)"
+	sqlstr := "INSERT INTO msguser (coming,owner,to_user,completed, created_at) VALUES ($1,$2,$3,$4,$5)"
 
 	for {
 		var message Message
@@ -94,7 +94,7 @@ func UsMsg(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Println("message..", message.Message)
 
-    	_,err = db.Exec(sqlStatement,message.Message,cls.User_id,id,true,time.Now())
+    	_,err = db.Exec(sqlstr,message.Message,cls.User_id,id,true,time.Now())
 
 		if err != nil {
 			fmt.Println("err Exec()", err)

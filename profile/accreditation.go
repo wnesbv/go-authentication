@@ -30,22 +30,22 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Password:", user.Password)
 		fmt.Println("Hash:    ", hash)
 
-		sqlStatement := `INSERT INTO users (username,email,password,created_at) VALUES ($1,$2,$3,$4)`
+		sqlstr := `INSERT INTO users (username,email,password,created_at) VALUES ($1,$2,$3,$4)`
 
-		_, err := db.Exec(sqlStatement, user.Username, user.Email, hash, time.Now())
+		_, err := db.Exec(sqlstr, user.Username, user.Email, hash, time.Now())
 
 		if err != nil {
 			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
 			return
 		}
 
-		http.Redirect(w, r, "/alluser", http.StatusFound)
+		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }
 
 func UpName(w http.ResponseWriter, r *http.Request) {
 
-	cls,err := authtoken.SqlToken(w, r)
+	cls,err := authtoken.SqlToken(w,r)
 
 	if cls == nil {
 		return
@@ -54,7 +54,7 @@ func UpName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i,err := profilUser(w, r, cls)
+	i,err := profilUser(w,r, cls)
 	if err != nil {
 		return
 	}
@@ -72,9 +72,9 @@ func UpName(w http.ResponseWriter, r *http.Request) {
 			Username: r.FormValue("username"),
 		}
 
-		sqlStatement := `UPDATE users SET username=$2, updated_at=$3 WHERE user_id=$1;`
+		sqlstr := `UPDATE users SET username=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlStatement, cls.User_id, user.Username, time.Now())
+		_, err := db.Exec(sqlstr, cls.User_id, user.Username, time.Now())
 
 		if err != nil {
 			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
@@ -114,9 +114,9 @@ func UpPass(w http.ResponseWriter, r *http.Request) {
 		}
 		hash, _ := hashPassword(user.Password)
 
-		sqlStatement := `UPDATE users SET password=$2, updated_at=$3 WHERE user_id=$1;`
+		sqlstr := `UPDATE users SET password=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlStatement, cls.User_id, hash, time.Now())
+		_, err := db.Exec(sqlstr, cls.User_id, hash, time.Now())
 
 		if err != nil {
 			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
@@ -178,7 +178,7 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
 	veri := r.URL.Query().Get("veri")
 
-	veri_email, err := authtoken.VerifySendToken(w, veri)
+	veri_email,err := authtoken.VerifySendToken(w, veri)
 	if veri_email == nil {
 		return
 	}
@@ -190,7 +190,7 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
 		sqlst := `UPDATE users SET email=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlst, cls.User_id, veri_email.Email, time.Now())
+		_, err := db.Exec(sqlst, cls.User_id,veri_email.Email,time.Now())
 
 		if err != nil {
 			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
@@ -203,7 +203,7 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
 func DelUs(w http.ResponseWriter, r *http.Request) {
 
-	cls, err := authtoken.SqlToken(w, r)
+	cls,err := authtoken.SqlToken(w,r)
 
 	if cls == nil {
 		return
@@ -227,14 +227,14 @@ func DelUs(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 
-		sqlStatement := `DELETE FROM users WHERE user_id=$1;`
+		sqlstr := `DELETE FROM users WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlStatement, cls.User_id)
+		_, err := db.Exec(sqlstr, cls.User_id)
 
 		if err != nil {
 			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
 			return
 		}
-		http.Redirect(w, r, "/alluser", http.StatusFound)
+		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }

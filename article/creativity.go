@@ -8,6 +8,7 @@ import (
     "net/http"
     "html/template"
 
+    "go_authentication/connect"
     "go_authentication/options"
     "go_authentication/authtoken"
 )
@@ -15,6 +16,7 @@ import (
 
 func Creativity(w http.ResponseWriter, r *http.Request) {
 
+    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -22,7 +24,6 @@ func Creativity(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         return
     }
-
 
     if r.Method == "GET" {
 
@@ -34,19 +35,19 @@ func Creativity(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
         
-        user := CreatArticle{
+        i := CreatArticle{
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
-        sqlStatement := `INSERT INTO article (title, description, owner, created_at) VALUES ($1,$2,$3,$4)`
+        sqlstr := `INSERT INTO article (title, description, owner, created_at) VALUES ($1,$2,$3,$4)`
 
-        _, err := db.Exec(sqlStatement, user.Title, user.Description, cls.User_id, time.Now())
+        _, err := conn.Exec(sqlstr, i.Title,i.Description,cls.User_id,time.Now())
 
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/author-id-article", http.StatusFound)
+        http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }
 
@@ -58,6 +59,7 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    conn := connect.Conn()
     cls,err := authtoken.SqlToken(w,r)
     if cls == nil {
         return
@@ -66,7 +68,7 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i, err := authorArt(w,r,cls,id)
+    art,err := authorArt(w,r, cls,id)
     if err != nil {
         return
     }
@@ -82,23 +84,23 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/update.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", i)
+        tpl.ExecuteTemplate(w, "base", art)
     }
 
 
     if r.Method == "POST" {
 
-        art := UpdateArticle{
+        i := UpdateArticle{
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
 
-        sqlStatement := `UPDATE article SET title=$3, description=$4, completed=$5, updated_at=$6 WHERE id=$1 AND owner=$2;`
+        sqlstr := `UPDATE article SET title=$3, description=$4, completed=$5, updated_at=$6 WHERE id=$1 AND owner=$2;`
         
-        _, err := db.Exec(sqlStatement, id, cls.User_id, art.Title, art.Description, flag, time.Now())
+        _, err := conn.Exec(sqlstr, id,cls.User_id,i.Title,i.Description,flag,time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
         http.Redirect(w, r, "/author-id-article", http.StatusFound)
@@ -113,6 +115,7 @@ func DelArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -146,12 +149,12 @@ func DelArt(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        sqlStatement := `DELETE FROM article WHERE id=$1 AND owner=$2;`
+        sqlstr := `DELETE FROM article WHERE id=$1 AND owner=$2;`
         
-        _, err := db.Exec(sqlStatement, id, cls.User_id)
+        _, err := conn.Exec(sqlstr, id,cls.User_id)
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
         
@@ -167,6 +170,7 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    conn := connect.Conn()
     cls,err := authtoken.SqlToken(w,r)
     if cls == nil {
         return
@@ -175,7 +179,7 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i,err := authorArt(w,r,cls,id)
+    i,err := authorArt(w,r, cls,id)
     if err != nil {
         return
     }
@@ -222,7 +226,7 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         if mkdirerr != nil {
             fmt.Println("Error os.MkdirAll():", mkdirerr)
         }
-        img, err := os.Create(fname)
+        img,err := os.Create(fname)
         if err != nil {
             fmt.Println("Error os.Create():", err)
         }
@@ -233,16 +237,16 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        sqlStatement := `UPDATE article SET img=$3, updated_at=$4 WHERE id=$1 AND owner=$2;`
+        sqlstr := `UPDATE article SET img=$3, updated_at=$4 WHERE id=$1 AND owner=$2;`
         
-        _, err = db.Exec(sqlStatement,id,cls.User_id,fle,time.Now())
+        _, err = conn.Exec(sqlstr, id,cls.User_id,fle,time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
 
-        http.Redirect(w, r, fname, http.StatusFound)
+        http.Redirect(w,r, fname, http.StatusFound)
     }
 }
 
@@ -254,6 +258,7 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -262,7 +267,7 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i,err := authorArt(w,r,cls,id)
+    i,err := authorArt(w,r, cls,id)
     if err != nil {
         return
     }
@@ -283,15 +288,15 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
             fmt.Println("e.. ", e)
         } 
 
-        sqlStatement := `UPDATE article SET img=$3, updated_at=$4 WHERE id=$1 AND owner=$2;`
+        sqlstr := `UPDATE article SET img=$3, updated_at=$4 WHERE id=$1 AND owner=$2;`
         
-        _, err = db.Exec(sqlStatement,id,cls.User_id,nil,time.Now())
+        _, err = conn.Exec(sqlstr, id,cls.User_id,nil,time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
 
-        http.Redirect(w, r, "/author-id-article", http.StatusFound)
+        http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }

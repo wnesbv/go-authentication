@@ -31,7 +31,7 @@ func Allarticle(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        names,err := allArt(w,rows)
+        list,err := allArt(w, rows)
         if err != nil {
             return
         }
@@ -41,7 +41,7 @@ func Allarticle(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/all.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }
 
@@ -59,36 +59,35 @@ func UsAllArt(w http.ResponseWriter, r *http.Request) {
         }
 
         owner := cls.User_id
-        rows,err := qsUserArt(w,owner)
+        rows,err := qsUserArt(w, owner)
         if err != nil {
             return
         }
-        names,err := userArt(w,rows)
+        list,err := userArt(w, rows)
         if err != nil {
             return
         }
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/author_id_article.html", "./tpl/base.html" ))
         
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }
 
 
-func DtlArt(w http.ResponseWriter, r *http.Request) {
+func DetArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        id, iderr := options.IdUrl(w,r)
-        if iderr != nil {
-            return
-        }
-        
-        i, err := idArt(w,id)
+        id,err := options.IdUrl(w,r)
         if err != nil {
             return
         }
-        fmt.Println(" DtlArt.. ", i)
+        
+        i,err := idArt(w, id)
+        if err != nil {
+            return
+        }
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/detail.html", "./tpl/base.html" ))
         

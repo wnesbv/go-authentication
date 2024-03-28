@@ -22,23 +22,23 @@ func OwrAllSsc(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        rows,err := qsOwSsc(w,cls.User_id)
+        rows,err := qsOwSsc(w, cls.User_id)
         if err != nil {
             return
         }
-        names,err := owSsc(w,rows)
+        list,err := owSsc(w, rows)
         if err != nil {
             return
         }
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/owner_ssc/all.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }
 
 
-func DtlOwrSsc(w http.ResponseWriter, r *http.Request) {
+func DetOwrSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
@@ -53,7 +53,7 @@ func DtlOwrSsc(w http.ResponseWriter, r *http.Request) {
         }
         
         owner := cls.User_id
-        i, err := ownerIdSsc(w,id,owner)
+        i,err := ownerIdSsc(w, id,owner)
         if err != nil {
             return
         }

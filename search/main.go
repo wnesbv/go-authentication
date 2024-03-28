@@ -25,7 +25,7 @@ func connsearch() {
     connstr := os.Getenv("DATABASE_URL")
 
     var err error
-    db, err = sql.Open("postgres", connstr)
+    db,err = sql.Open("postgres", connstr)
     if err != nil {
         fmt.Println("err: sql.Open() search", err)
     }

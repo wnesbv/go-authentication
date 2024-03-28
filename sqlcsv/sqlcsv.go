@@ -43,7 +43,7 @@ func (c *Converter) SetRowPostProcessor(processor CsvRowPostProcessorFunc) {
 }
 
 func (c Converter) String() string {
-	s, err := c.WriteString()
+	s,err := c.WriteString()
 	if err != nil {
 		return ""
 	}
@@ -57,7 +57,7 @@ func (c Converter) WriteString() (string, error) {
 }
 
 func (c Converter) WriteFile(csvFileName string) error {
-	f, err := os.Create(csvFileName)
+	f,err := os.Create(csvFileName)
 	if err != nil {
 		return err
 	}
@@ -79,7 +79,7 @@ func (c Converter) Write(writer io.Writer) error {
 		csvWriter.Comma = c.Delimiter
 	}
 
-	columns, err := rows.ColumnTypes()
+	columns,err := rows.ColumnTypes()
 	if err != nil {
 		return err
 	}

@@ -11,7 +11,7 @@ import (
 
 func qsAllSsc(w http.ResponseWriter) (rows *sql.Rows, err error) {
 
-    rows, err = db.Query("SELECT * FROM subscription")
+    rows,err = db.Query("SELECT * FROM subscription")
 
     if err != nil {
         switch {
@@ -21,13 +21,13 @@ func qsAllSsc(w http.ResponseWriter) (rows *sql.Rows, err error) {
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 
 func qsUserAllSsc(w http.ResponseWriter, to_user int) (rows *sql.Rows, err error) {
 
-    rows, err = db.Query("SELECT * FROM subscription WHERE to_user=$1", to_user)
+    rows,err = db.Query("SELECT * FROM subscription WHERE to_user=$1", to_user)
 
     if err != nil {
         switch {
@@ -37,13 +37,13 @@ func qsUserAllSsc(w http.ResponseWriter, to_user int) (rows *sql.Rows, err error
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 
-func qsAdminGroupSsc(w http.ResponseWriter, owner int) (names []int, err error) {
+func qsAdminGroupSsc(w http.ResponseWriter, owner int) (list []int, err error) {
 
-    admin, err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
     if err != nil {
         switch {
             case true:
@@ -54,7 +54,6 @@ func qsAdminGroupSsc(w http.ResponseWriter, owner int) (names []int, err error) 
     }
     defer admin.Close()
 
-    // var names []int
     for admin.Next() {
         i := new(Subscription)
         err = admin.Scan(
@@ -64,15 +63,15 @@ func qsAdminGroupSsc(w http.ResponseWriter, owner int) (names []int, err error) 
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i.Id)
+        list = append(list, i.Id)
     }
-    return names,err
+    return list,err
 }
 
 
 func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
 
-    admin, err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
     if err != nil {
         switch {
             case true:
@@ -83,7 +82,7 @@ func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error)
     }
     defer admin.Close()
 
-    var names []int
+    var list []int
     for admin.Next() {
         i := new(Subscription)
         err = admin.Scan(
@@ -93,12 +92,10 @@ func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error)
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i.Id)
+        list = append(list, i.Id)
     }
-
-    fmt.Println("names", names)
     
-    rows, err = db.Query("SELECT * FROM subscription WHERE to_group = ANY($1);", pq.Array(names))
+    rows,err = db.Query("SELECT * FROM subscription WHERE to_group = ANY($1);", pq.Array(list))
 
     if err != nil {
         switch {
@@ -108,7 +105,7 @@ func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error)
         }
         return
     }
-    return rows, err
+    return rows,err
 }
 
 

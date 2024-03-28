@@ -33,13 +33,13 @@ func Creativity(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
         
-        user := CreatGroup{
+        i := CreatGroup{
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
-        sqlStatement := `INSERT INTO groups (title, description, owner, created_at) VALUES ($1,$2,$3,$4)`
+        sqlstr := `INSERT INTO groups (title, description, owner, created_at) VALUES ($1,$2,$3,$4)`
 
-        _, err := db.Exec(sqlStatement, user.Title, user.Description, cls.User_id, time.Now())
+        _, err := db.Exec(sqlstr, i.Title,i.Description,cls.User_id,time.Now())
 
         if err != nil {
             fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
@@ -65,7 +65,7 @@ func UpGr(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i, err := idGroup(w,id)
+    art,err := idGroup(w, id)
     if err != nil {
         return
     }
@@ -81,25 +81,25 @@ func UpGr(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/update.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", i)
+        tpl.ExecuteTemplate(w, "base", art)
     }
 
 
     if r.Method == "POST" {
 
-        art := UpdateGroup{
+        i := UpdateGroup{
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
 
-        sqlStatement := `UPDATE groups SET title=$3, description=$4, completed=$5, updated_at=$6 WHERE id=$1 AND owner=$2;`
+        sqlstr := `UPDATE groups SET title=$3, description=$4, completed=$5, updated_at=$6 WHERE id=$1 AND owner=$2;`
         
-        _, err := db.Exec(sqlStatement, id, cls.User_id, art.Title, art.Description, flag, time.Now())
+        _, err := db.Exec(sqlstr, id,cls.User_id,i.Title,i.Description,flag,time.Now())
         
         if err != nil {
             fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/owner-group", http.StatusFound)
+        http.Redirect(w,r, "/owner-group", http.StatusFound)
     }
 }

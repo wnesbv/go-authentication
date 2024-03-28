@@ -43,7 +43,7 @@ func IdUser(w http.ResponseWriter, id int) (i AllUser, err error) {
         fmt.Fprintf(w, "sql err..! : %+v\n", err)
         return
     }
-    return i, err
+    return i,err
 }
 
 
@@ -73,7 +73,7 @@ func profilUser(w http.ResponseWriter, r *http.Request, claims *authtoken.Claims
         return
     }
 
-    return i, err
+    return i,err
 }
 
 

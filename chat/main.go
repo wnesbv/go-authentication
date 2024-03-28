@@ -5,6 +5,7 @@ import (
 	"time"
 	"fmt"
     "os"
+    "runtime"
 	
     _ "github.com/lib/pq"
     "github.com/joho/godotenv"
@@ -25,7 +26,7 @@ func connchat() {
     connstr := os.Getenv("DATABASE_URL")
 
     var err error
-    db, err = sql.Open("postgres", connstr)
+    db,err = sql.Open("postgres", connstr)
     if err != nil {
         fmt.Println("err: sql.Open() chat", err)
     }
@@ -48,8 +49,11 @@ func init() {
 	go connchat()
 	go userCh()
 	go groupCh()
+    
     time.Sleep(1 * time.Second)
 
     elapsed := time.Since(start)
     fmt.Printf(" sql chat time.. :  %s \n", elapsed)
+
+    fmt.Println(" chat goroutine..", runtime.NumGoroutine())
 }

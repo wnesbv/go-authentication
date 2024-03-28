@@ -32,13 +32,13 @@ func userIdSsc(w http.ResponseWriter, id int) (i Subscription, err error) {
         return
     }
 
-    return i, err
+    return i,err
 }
 
 // creat
 func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err error) {
 
-    // names,err := qsAdminGroupSsc(w,owner)
+    // list,err := qsAdminGroupSsc(w,owner)
     // if err != nil {
     //     return
     // }
@@ -54,7 +54,7 @@ func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err er
     }
     defer admin.Close()
 
-    var names []int
+    var list []int
     for admin.Next() {
         i := new(Subscription)
         err = admin.Scan(
@@ -63,10 +63,10 @@ func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err er
         if err != nil {
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
         }
-        names = append(names, i.Id)
+        list = append(list, i.Id)
     }
     
-    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1 AND to_group = ANY($2)", id, pq.Array(names))
+    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1 AND to_group = ANY($2)", id, pq.Array(list))
     
     err = row.Scan(
         &i.Id,
@@ -88,13 +88,13 @@ func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err er
         return
     }
 
-    return i, err
+    return i,err
 }
 // ..
 
 
 // list
-func allSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+func allSsc(w http.ResponseWriter, rows *sql.Rows) (list []*Subscription, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -114,12 +114,12 @@ func allSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err e
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }
 
-func userSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+func userSsc(w http.ResponseWriter, rows *sql.Rows) (list []*Subscription, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -139,12 +139,12 @@ func userSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err 
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }
 
-func roomSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err error) {
+func roomSsc(w http.ResponseWriter, rows *sql.Rows) (list []*Subscription, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -164,7 +164,7 @@ func roomSsc(w http.ResponseWriter, rows *sql.Rows) (names []*Subscription, err 
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }

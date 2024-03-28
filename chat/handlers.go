@@ -25,22 +25,22 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
     }
 
     // detail..
-    list,err := qSscChUs(w,id)
+    detail,err := qSscChUs(w, id)
     if err != nil {
         return
     }
-    in_users,err := idUs(w,list)
+    in_users,err := idUs(w, detail)
     if err != nil {
         return
     }
     // ..
 
     // list..
-    rows,err := qUsCh(w,id)
+    rows,err := qUsCh(w, id)
     if err != nil {
         return
     }
-    names,err := usChat(w,rows)
+    list,err := usChat(w, rows)
     if err != nil {
         return
     }
@@ -54,7 +54,7 @@ func UsChat(w http.ResponseWriter, r *http.Request) {
     }
     data := ListData {
         Ssc: id,
-        I: names,
+        I: list,
         Uid: cls.User_id,
         Uemail: cls.Email,
         T: in_users,
@@ -87,12 +87,12 @@ func GrChat(w http.ResponseWriter, r *http.Request) {
         D Group
     }
 
-    idname,err := idGroup(w,id)
+    idname,err := idGroup(w, id)
     if err != nil {
         return
     }
 
-    user,err := qSscGrChUs(w,id)
+    user,err := qSscGrChUs(w, id)
     if err != nil {
         return
     }
@@ -101,18 +101,18 @@ func GrChat(w http.ResponseWriter, r *http.Request) {
     if i {
 
         // msg..
-        rows,err := qGrChat(w,id)
+        rows,err := qGrChat(w, id)
         if err != nil {
             return
         }
-        names,err := groupChat(w,rows,id)
+        list,err := groupChat(w, rows,id)
         if err != nil {
             return
         }
         // ..
 
         data := ListData {
-            I: names,
+            I: list,
             D: idname,
         }
 
@@ -142,12 +142,12 @@ func GrAll(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        names,err := allGroup(w,rows)
+        list,err := allGroup(w, rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all_group.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
 
         }
     }
@@ -162,16 +162,16 @@ func GrOwr(w http.ResponseWriter, r *http.Request) {
 
         owner := cls.User_id
 
-        rows,err := qUsGroup(w,owner)
+        rows,err := qUsGroup(w, owner)
         if err != nil {
             return
         }
-        names,err := userGroup(w,rows)
+        list,err := userGroup(w, rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all_owr_group.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
 
         } else {
 
@@ -179,19 +179,19 @@ func GrOwr(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
-        names,err := allGroup(w,rows)
+        list,err := allGroup(w,rows)
         if err != nil {
             return
         }
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/chat/all.html", "./tpl/base.html" ))
-        tpl.ExecuteTemplate(w, "base", names)
+        tpl.ExecuteTemplate(w, "base", list)
 
         }
     }
 }
 
 
-func DtlGr(w http.ResponseWriter, r *http.Request) {
+func DetGr(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 

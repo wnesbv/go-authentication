@@ -4,12 +4,14 @@ import (
     "fmt"
     "net/http"
     "html/template"
+    "runtime"
 
     "go_authentication/authtoken"
 )
 
 
 func Home(w http.ResponseWriter, r *http.Request) {
+
     tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/index.html", "./tpl/base.html" ))
     tpl.ExecuteTemplate(w, "base", nil)
 }
@@ -38,39 +40,39 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
         if cls != nil {
             
-        var names []*UserList
+        var list []*UserList
         for rows.Next() {
             i := new(UserList)
-            err := rows.Scan(&i.User_id, &i.Username, &i.Email)
 
+            err := rows.Scan(&i.User_id, &i.Username, &i.Email)
             if err != nil {
                 fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
                 return
             }
-            names = append(names, i)
+            list = append(list, i)
         }
 
         data := ListData {
             Auth: cls.Email,
-            I: names,
+            I: list,
         }
         tpl.ExecuteTemplate(w, "base", data)
 
         } else {
 
-        var names []*UserList
+        var list []*UserList
         for rows.Next() {
             i := new(UserList)
-            err := rows.Scan(&i.User_id, &i.Username, &i.Email)
+            err := rows.Scan(&i.User_id,&i.Username,&i.Email)
 
             if err != nil {
                 fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
                 return
             }
-            names = append(names, i)
+            list = append(list, i)
         }
         data := ListData {
-            I: names,
+            I: list,
         }
         tpl.ExecuteTemplate(w, "base", data)
         }
@@ -78,6 +80,9 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         if err = rows.Close(); err != nil {
             fmt.Fprintf(w, "Error: sql..! : %+v\n", err)
         }
+
+    fmt.Println(" Alluser goroutine..", runtime.NumGoroutine())
+
     }
 }
 
@@ -86,7 +91,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        rows, err := db.Query("SELECT username,email FROM users")
+        rows,err := db.Query("SELECT username,email FROM users")
 
         if err != nil {
             fmt.Fprintf(w, "Error: db.Query()..! : %+v\n", err)
@@ -94,7 +99,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         }
         defer rows.Close()
 
-        var albums []*UserList
+        var list []*UserList
         
         for rows.Next() {
             data := new(UserList)
@@ -104,7 +109,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
                 fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
                 return
             }
-            albums = append(albums, data)
+            list = append(list, data)
         }
 
         if err = rows.Close(); err != nil {
@@ -113,6 +118,6 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/profile/all.html", "./tpl/base.html" ))
 
-        tpl.ExecuteTemplate(w, "base", albums)
+        tpl.ExecuteTemplate(w, "base", list)
     }
 }*/

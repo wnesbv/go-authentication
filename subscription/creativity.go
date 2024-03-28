@@ -34,7 +34,7 @@ func ToUpUsSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        i,err := userIdSsc(w,id)
+        i,err := userIdSsc(w, id)
         if err != nil {
             return
         }
@@ -47,9 +47,9 @@ func ToUpUsSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
-        sqlStatement := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
+        sqlstr := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
         
-        _, err := db.Exec(sqlStatement, id,flag,time.Now())
+        _, err := db.Exec(sqlstr, id,flag,time.Now())
         
         if err != nil {
             fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
@@ -87,7 +87,7 @@ func ToUpGroupSsc(w http.ResponseWriter, r *http.Request) {
 
         owner := cls.User_id
 
-        i,err := roomIdSsc(w,id,owner)
+        i,err := roomIdSsc(w, id,owner)
         if err != nil {
             return
         }
@@ -100,9 +100,9 @@ func ToUpGroupSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
-        sqlStatement := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
+        sqlstr := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
         
-        _, err := db.Exec(sqlStatement, id,flag,time.Now())
+        _, err := db.Exec(sqlstr, id,flag,time.Now())
         
         if err != nil {
             fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)

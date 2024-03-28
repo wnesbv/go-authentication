@@ -41,7 +41,7 @@ func idUs(w http.ResponseWriter, list []int) (names []*ChUser, err error) {
 }
 
 
-func usChat(w http.ResponseWriter, rows *sql.Rows) (names []*MsgUser, err error) {
+func usChat(w http.ResponseWriter, rows *sql.Rows) (list []*MsgUser, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -60,13 +60,13 @@ func usChat(w http.ResponseWriter, rows *sql.Rows) (names []*MsgUser, err error)
             fmt.Fprintf(w, "Error usChat Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }
 
 
-func allGroup(w http.ResponseWriter, rows *sql.Rows) (names []*Group, err error) {
+func allGroup(w http.ResponseWriter, rows *sql.Rows) (list []*Group, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -85,13 +85,13 @@ func allGroup(w http.ResponseWriter, rows *sql.Rows) (names []*Group, err error)
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }
 
 
-func userGroup(w http.ResponseWriter, rows *sql.Rows) (names []*Group, err error) {
+func userGroup(w http.ResponseWriter, rows *sql.Rows) (list []*Group, err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -110,9 +110,9 @@ func userGroup(w http.ResponseWriter, rows *sql.Rows) (names []*Group, err error
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
-    return names, err
+    return list,err
 }
 
 
@@ -138,11 +138,11 @@ func idGroup(w http.ResponseWriter, id int) (i Group, err error) {
         fmt.Fprintf(w, "err sql..! : %+v\n", err)
         return
     }
-    return i, err
+    return i,err
 }
 
 
-func groupChat(w http.ResponseWriter, rows *sql.Rows,to_group int) (names []*MsgGroup,err error) {
+func groupChat(w http.ResponseWriter, rows *sql.Rows,to_group int) (list []*MsgGroup,err error) {
 
     defer rows.Close()
     for rows.Next() {
@@ -161,8 +161,8 @@ func groupChat(w http.ResponseWriter, rows *sql.Rows,to_group int) (names []*Msg
             fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
             return
         }
-        names = append(names, i)
+        list = append(list, i)
     }
 
-    return names, err
+    return list,err
 }
