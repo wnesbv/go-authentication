@@ -33,9 +33,9 @@ func owSsc(w http.ResponseWriter, rows *sql.Rows) (list []*Subscription, err err
 }
 
 
-func ownerIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err error) {
-    
-    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1 AND owner=$2", id,owner)
+func ownerIdSsc(w http.ResponseWriter, conn *sql.DB, id int, owner int) (i Subscription, err error) {
+
+    row := conn.QueryRow("SELECT * FROM subscription WHERE id=$1 AND owner=$2", id,owner)
 
     err = row.Scan(
         &i.Id,

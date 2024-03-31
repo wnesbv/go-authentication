@@ -1,4 +1,4 @@
-package owner_ssc
+package sitemap
 
 import (
     "database/sql"
@@ -7,9 +7,9 @@ import (
 )
 
 
-func qsOwSsc(w http.ResponseWriter, conn *sql.DB, owner int) (rows *sql.Rows, err error) {
+func qSpArt(w http.ResponseWriter, conn *sql.DB) (rows *sql.Rows, err error) {
 
-    rows,err = conn.Query("SELECT * FROM subscription WHERE owner=$1", owner)
+    rows,err = conn.Query("SELECT id, title, description, img, owner, completed, created_at, updated_at FROM article WHERE Completed=$1", true)
 
     if err != nil {
         switch {
@@ -22,5 +22,3 @@ func qsOwSsc(w http.ResponseWriter, conn *sql.DB, owner int) (rows *sql.Rows, er
 
     return rows,err
 }
-
-

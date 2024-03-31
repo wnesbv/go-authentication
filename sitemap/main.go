@@ -1,4 +1,4 @@
-package sqlcsv
+package sitemap
 
 
 func init() {

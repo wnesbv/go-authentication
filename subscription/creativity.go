@@ -6,6 +6,7 @@ import (
     "net/http"
     "html/template"
 
+    "go_authentication/connect"
     "go_authentication/options"
     "go_authentication/authtoken"
 )
@@ -32,12 +33,13 @@ func ToUpUsSsc(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    if r.Method == "GET" {
+    conn := connect.ConnSql()
+    i,err := userIdSsc(w, conn,id)
+    if err != nil {
+        return
+    }
 
-        i,err := userIdSsc(w, id)
-        if err != nil {
-            return
-        }
+    if r.Method == "GET" {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/ssc/update_ssc.html", "./tpl/base.html" ))
 
@@ -47,15 +49,17 @@ func ToUpUsSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
+        conn := connect.ConnSql()
         sqlstr := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
         
-        _, err := db.Exec(sqlstr, id,flag,time.Now())
+        _, err := conn.Exec(sqlstr, id,flag,time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/all-touser-ssc", http.StatusFound)
+        defer conn.Close()
+        http.Redirect(w,r, "/all-touser-ssc", http.StatusFound)
     }
 }
 
@@ -82,15 +86,14 @@ func ToUpGroupSsc(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    owner := cls.User_id
+    conn := connect.ConnSql()
+    i,err := roomIdSsc(w, conn,id,owner)
+    if err != nil {
+        return
+    }
 
     if r.Method == "GET" {
-
-        owner := cls.User_id
-
-        i,err := roomIdSsc(w, id,owner)
-        if err != nil {
-            return
-        }
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/ssc/update_ssc.html", "./tpl/base.html" ))
 
@@ -100,14 +103,16 @@ func ToUpGroupSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
+        conn := connect.ConnSql()
         sqlstr := `UPDATE subscription SET completed=$2, updated_at=$3 WHERE id=$1;`
         
-        _, err := db.Exec(sqlstr, id,flag,time.Now())
+        _, err := conn.Exec(sqlstr, id,flag,time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/all-toroom-ssc", http.StatusFound)
+        defer conn.Close()
+        http.Redirect(w,r, "/all-toroom-ssc", http.StatusFound)
     }
 }

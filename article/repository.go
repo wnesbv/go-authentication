@@ -4,13 +4,12 @@ import (
     "database/sql"
     "net/http"
     "fmt"
-    "go_authentication/connect"
+    "runtime"
 )
 
 
-func qArt(w http.ResponseWriter) (rows *sql.Rows, err error) {
+func qArt(w http.ResponseWriter, conn *sql.DB) (rows *sql.Rows, err error) {
 
-    conn := connect.Conn()
     rows,err = conn.Query("SELECT id, title, description, img, owner, completed, created_at, updated_at FROM article WHERE Completed=$1", true)
 
     if err != nil {
@@ -21,14 +20,14 @@ func qArt(w http.ResponseWriter) (rows *sql.Rows, err error) {
         }
         return
     }
-    defer conn.Close()
+    fmt.Println(" qArt goroutine..", runtime.NumGoroutine())
+
     return rows,err
 }
 
 
-func qsUserArt(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
+func qsUserArt(w http.ResponseWriter, conn *sql.DB, owner int) (rows *sql.Rows, err error) {
 
-    conn := connect.Conn()
     rows,err = conn.Query("SELECT * FROM article WHERE owner=$1", owner)
 
     if err != nil {
@@ -39,6 +38,6 @@ func qsUserArt(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
         }
         return
     }
-    defer conn.Close()
+
     return rows,err
 }

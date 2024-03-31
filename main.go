@@ -11,6 +11,7 @@ import (
 	"go_authentication/chat"
 	"go_authentication/sqlcsv"
 	"go_authentication/search"
+	"go_authentication/sitemap"
 	"go_authentication/profile"
 	"go_authentication/article"
 	"go_authentication/owner_ssc"
@@ -78,6 +79,9 @@ func main() {
 	// search..
 	http.HandleFunc("/search", search.SearchHandler)
 
+	// sitemap.xml
+	http.HandleFunc("/sitemap.xml", sitemap.SitemapHandler)
+
 	http.HandleFunc("/onauth", article.OnAuth)
 
 	// static..
@@ -86,11 +90,10 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static", fls))
 	
 
-	fmt.Println("main goroutine..", runtime.NumGoroutine())
+	fmt.Println(" main goroutine..", runtime.NumGoroutine())
 
-	fmt.Println("Server is running on port 8080")
+	fmt.Println("Server running port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
-
 }
 
 

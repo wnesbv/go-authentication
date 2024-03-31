@@ -4,13 +4,14 @@ import (
     "database/sql"
     "fmt"
     "net/http"
+
     "github.com/lib/pq"
 )
 
 // creat
-func userIdSsc(w http.ResponseWriter, id int) (i Subscription, err error) {
-    
-    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1", id)
+func userIdSsc(w http.ResponseWriter, conn *sql.DB, id int) (i Subscription, err error) {
+
+    row := conn.QueryRow("SELECT * FROM subscription WHERE id=$1", id)
 
     err = row.Scan(
         &i.Id,
@@ -36,18 +37,18 @@ func userIdSsc(w http.ResponseWriter, id int) (i Subscription, err error) {
 }
 
 // creat
-func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err error) {
+func roomIdSsc(w http.ResponseWriter, conn *sql.DB, id int, owner int) (i Subscription, err error) {
 
-    // list,err := qsAdminGroupSsc(w,owner)
+    // list,err := qsAdminGroupSsc(w, conn,owner)
     // if err != nil {
     //     return
     // }
 
-    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    admin,err := conn.Query("SELECT id FROM groups WHERE owner=$1", owner)
     if err != nil {
         switch {
             case true:
-            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
+            fmt.Fprintf(w, "Error: Query..! : %+v\n", err)
             break
         }
         return
@@ -61,12 +62,12 @@ func roomIdSsc(w http.ResponseWriter, id int, owner int) (i Subscription, err er
             &i.Id,
         )
         if err != nil {
-            fmt.Fprintf(w, "Error Scan()..! : %+v\n", err)
+            fmt.Fprintf(w, "Error Scan..! : %+v\n", err)
         }
         list = append(list, i.Id)
     }
     
-    row := db.QueryRow("SELECT * FROM subscription WHERE id=$1 AND to_group = ANY($2)", id, pq.Array(list))
+    row := conn.QueryRow("SELECT * FROM subscription WHERE id=$1 AND to_group = ANY($2)", id,pq.Array(list))
     
     err = row.Scan(
         &i.Id,

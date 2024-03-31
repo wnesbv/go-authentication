@@ -5,13 +5,14 @@ import (
     "time"
     "fmt"
     "os"
+    "runtime"
 
     _ "github.com/lib/pq"
     "github.com/joho/godotenv"
 )
 
 
-func Conn() (*sql.DB) {
+func ConnSql() (*sql.DB) {
 
     start := time.Now()
 
@@ -24,25 +25,33 @@ func Conn() (*sql.DB) {
     }
 
     connstr := os.Getenv("DATABASE_URL")
-    var err error
-    var conn *sql.DB
 
-    conn,err = sql.Open("postgres", connstr)
-    if err != nil {
-        fmt.Println("coon err: sql Open..", err)
-    }
+    ch := make(chan *sql.DB)
 
-    err = conn.Ping()
-    if err != nil {
-        fmt.Println("coon err: Ping..", err)
-    }
-    if err == nil {
-        fmt.Println("sql OK..! : sql is connected")
-    }
+    go func() {
+
+        conn,err := sql.Open("postgres", connstr)
+        if err != nil {
+            fmt.Println("coon err: sql Open..", err)
+        }
+
+        ping_err := conn.Ping()
+        if ping_err != nil {
+            fmt.Println("coon err: Ping..", ping_err)
+        }
+        if ping_err == nil {
+            fmt.Println("ConnSql OK..!")
+        }
+
+        ch <- conn
+
+    }()
+
+    fmt.Println(" ConnSql goroutine..", runtime.NumGoroutine())
 
     elapsed := time.Since(start)
-    fmt.Printf(" sql connect time.. :  %s \n", elapsed)
+    fmt.Printf(" sql conn time.. :  %s \n", elapsed)
 
-    return conn
+    return <- ch
 }
 

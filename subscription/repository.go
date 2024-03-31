@@ -9,25 +9,9 @@ import (
 )
 
 
-func qsAllSsc(w http.ResponseWriter) (rows *sql.Rows, err error) {
+func qsAllSsc(w http.ResponseWriter, conn *sql.DB) (rows *sql.Rows, err error) {
 
-    rows,err = db.Query("SELECT * FROM subscription")
-
-    if err != nil {
-        switch {
-            case true:
-            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
-            break
-        }
-        return
-    }
-    return rows,err
-}
-
-
-func qsUserAllSsc(w http.ResponseWriter, to_user int) (rows *sql.Rows, err error) {
-
-    rows,err = db.Query("SELECT * FROM subscription WHERE to_user=$1", to_user)
+    rows,err = conn.Query("SELECT * FROM subscription")
 
     if err != nil {
         switch {
@@ -37,13 +21,31 @@ func qsUserAllSsc(w http.ResponseWriter, to_user int) (rows *sql.Rows, err error
         }
         return
     }
+    
     return rows,err
 }
 
 
-func qsAdminGroupSsc(w http.ResponseWriter, owner int) (list []int, err error) {
+func qsUserAllSsc(w http.ResponseWriter, conn *sql.DB, to_user int) (rows *sql.Rows, err error) {
 
-    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    rows,err = conn.Query("SELECT * FROM subscription WHERE to_user=$1", to_user)
+
+    if err != nil {
+        switch {
+            case true:
+            fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
+            break
+        }
+        return
+    }
+
+    return rows,err
+}
+
+
+func qsAdminGroupSsc(w http.ResponseWriter, conn *sql.DB, owner int) (list []int, err error) {
+
+    admin,err := conn.Query("SELECT id FROM groups WHERE owner=$1", owner)
     if err != nil {
         switch {
             case true:
@@ -65,13 +67,14 @@ func qsAdminGroupSsc(w http.ResponseWriter, owner int) (list []int, err error) {
         }
         list = append(list, i.Id)
     }
+
     return list,err
 }
 
 
-func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error) {
+func qsGroupAllSsc(w http.ResponseWriter, conn *sql.DB, owner int) (rows *sql.Rows, err error) {
 
-    admin,err := db.Query("SELECT id FROM groups WHERE owner=$1", owner)
+    admin,err := conn.Query("SELECT id FROM groups WHERE owner=$1", owner)
     if err != nil {
         switch {
             case true:
@@ -95,7 +98,7 @@ func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error)
         list = append(list, i.Id)
     }
     
-    rows,err = db.Query("SELECT * FROM subscription WHERE to_group = ANY($1);", pq.Array(list))
+    rows,err = conn.Query("SELECT * FROM subscription WHERE to_group = ANY($1);", pq.Array(list))
 
     if err != nil {
         switch {
@@ -105,6 +108,7 @@ func qsGroupAllSsc(w http.ResponseWriter, owner int) (rows *sql.Rows, err error)
         }
         return
     }
+
     return rows,err
 }
 

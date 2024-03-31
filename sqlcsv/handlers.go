@@ -9,6 +9,7 @@ import (
     "encoding/csv"
     "html/template"
 
+    "go_authentication/connect"
     "go_authentication/authtoken"
 )
 
@@ -17,6 +18,7 @@ import (
 
     if r.Method == "GET" {
 
+        conn := connect.ConnSql()
         cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
@@ -27,7 +29,7 @@ import (
 
         owner := cls.User_id
         
-        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := conn.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -43,6 +45,7 @@ import (
         w.Header().Set("Content-Disposition", "attachment; filename=\"report.csv\"")
 
         Write(w, rows)
+        defer conn.Close()
     }
 }*/
 
@@ -51,6 +54,7 @@ import (
 
     if r.Method == "GET" {
 
+        conn := connect.ConnSql()
         cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
@@ -61,7 +65,7 @@ import (
 
         owner := cls.User_id
         
-        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := conn.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -118,7 +122,7 @@ import (
         // w.Header().Set("Location", "/allarticle")
         // w.WriteHeader(http.StatusFound)
         // fmt.Println("CSV successfully buf..!", file.String())
-
+        defer conn.Close()
     }
 }*/
 
@@ -127,6 +131,7 @@ func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
+        conn := connect.ConnSql()
         cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
@@ -137,7 +142,7 @@ func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
         owner := cls.User_id
         
-        rows,err := db.Query("SELECT * FROM article WHERE owner=$1", owner)
+        rows,err := conn.Query("SELECT * FROM article WHERE owner=$1", owner)
 
         if err != nil {
             switch {
@@ -198,7 +203,9 @@ func CsvImpArt(w http.ResponseWriter, r *http.Request) {
 
         fmt.Println("CSV successfully..!", file)
 
-        http.Redirect(w, r, "/static/csv/" + cls.Email + "/data.csv", http.StatusFound)
+        defer conn.Close()
+
+        http.Redirect(w,r, "/static/csv/" + cls.Email + "/data.csv", http.StatusFound)
 
     }
 }
@@ -224,6 +231,7 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
+        conn := connect.ConnSql()
         owner := cls.User_id
 
         file, handler, err := r.FormFile("file")
@@ -255,16 +263,19 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
         sqlst := "INSERT INTO article (title,description,img,owner,completed,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7)"
 
-        _, err := db.Exec(sqlst, i2,i3,nil,owner,false,time.Now(),nil)
+        _, err := conn.Exec(sqlst, i2,i3,nil,owner,false,time.Now(),nil)
 
         if err != nil {
             w.WriteHeader(http.StatusBadRequest)
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        fmt.Println("OK..! db.Exec()..", row)
+        fmt.Println("OK..! Exec..", row)
         }
-        http.Redirect(w, r, "/author-id-article", http.StatusFound)
+
+        defer conn.Close()
+
+        http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }
 
@@ -273,6 +284,7 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
+        conn := connect.ConnSql()
         cls,err := authtoken.OnToken(w,r)
         if cls == nil {
             return
@@ -301,13 +313,15 @@ func ExpCsvArt(w http.ResponseWriter, r *http.Request) {
             i3 := row[2]
             i4 := row[3]
 
-            _, err := db.Exec("INSERT INTO article (id,title,description,img,owner,completed,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)", i1,i2,i3,i4,owner,false,time.Now(),nil)
+            _, err := conn.Exec("INSERT INTO article (id,title,description,img,owner,completed,created_at,updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)", i1,i2,i3,i4,owner,false,time.Now(),nil)
             if err != nil {
-                fmt.Println("db.Exec()..", err)
+                fmt.Println("err Exec..", err)
             } else {
-                fmt.Println("OK..! db.Exec()..", row)
+                fmt.Println("OK..! Exec..", row)
             }
         }
+
+        defer conn.Close()
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/export.html", "./tpl/base.html" ))
         tpl.ExecuteTemplate(w, "base", nil)

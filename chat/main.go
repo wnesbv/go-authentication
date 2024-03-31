@@ -49,11 +49,11 @@ func init() {
 	go connchat()
 	go userCh()
 	go groupCh()
-    
-    time.Sleep(1 * time.Second)
 
     elapsed := time.Since(start)
     fmt.Printf(" sql chat time.. :  %s \n", elapsed)
-
+    
     fmt.Println(" chat goroutine..", runtime.NumGoroutine())
+
+    time.Sleep(100 * time.Millisecond)
 }

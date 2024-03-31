@@ -6,6 +6,7 @@ import (
     "net/http"
     "html/template"
 
+    "go_authentication/connect"
     "go_authentication/options"
     "go_authentication/authtoken"
 )
@@ -40,15 +41,19 @@ func AddSscUs(w http.ResponseWriter, r *http.Request) {
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
+
+        conn := connect.ConnSql()
         sqlstr := `INSERT INTO subscription (title, description, owner, to_user, created_at) VALUES ($1,$2,$3,$4,$5)`
 
-        _, err := db.Exec(sqlstr, user.Title, user.Description, cls.User_id, id, time.Now())
+        _, err := conn.Exec(sqlstr, user.Title,user.Description,cls.User_id,id,time.Now())
 
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/all-ssc", http.StatusFound)
+
+        defer conn.Close()
+        http.Redirect(w,r, "/all-ssc", http.StatusFound)
     }
 }
 
@@ -81,15 +86,19 @@ func AddSscGr(w http.ResponseWriter, r *http.Request) {
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
+
+        conn := connect.ConnSql()
         sqlstr := `INSERT INTO subscription (title, description, owner, to_group, created_at) VALUES ($1,$2,$3,$4,$5)`
 
-        _, err := db.Exec(sqlstr, user.Title, user.Description, cls.User_id, id, time.Now())
+        _, err := conn.Exec(sqlstr, user.Title,user.Description,cls.User_id,id,time.Now())
 
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/all-ssc", http.StatusFound)
+
+        defer conn.Close()
+        http.Redirect(w,r, "/all-ssc", http.StatusFound)
     }
 }
 
@@ -110,7 +119,8 @@ func OwrUpSsc(w http.ResponseWriter, r *http.Request) {
     }
 
     owner := cls.User_id
-    i,err := ownerIdSsc(w, id,owner)
+    conn := connect.ConnSql()
+    i,err := ownerIdSsc(w, conn,id,owner)
     if err != nil {
         return
     }
@@ -132,13 +142,15 @@ func OwrUpSsc(w http.ResponseWriter, r *http.Request) {
 
         sqlstr := "UPDATE subscription SET title=$3, description=$4, updated_at=$5 WHERE id=$1 AND owner=$2;"
 
-        _, err := db.Exec(sqlstr, id, cls.User_id, art.Title, art.Description, time.Now())
+        _, err := conn.Exec(sqlstr, id, cls.User_id, art.Title, art.Description, time.Now())
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
-        http.Redirect(w, r, "/all-ssc", http.StatusFound)
+
+        defer conn.Close()
+        http.Redirect(w,r, "/all-ssc", http.StatusFound)
     }
 }
 
@@ -173,15 +185,17 @@ func OwrDelSsc(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "POST" {
 
+        conn := connect.ConnSql()
         sqlstr := `DELETE FROM subscription WHERE id=$1 AND owner=$2;`
         
-        _, err := db.Exec(sqlstr, id,cls.User_id)
+        _, err := conn.Exec(sqlstr, id,cls.User_id)
         
         if err != nil {
-            fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+            fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
         
-        http.Redirect(w, r, "/all-ssc", http.StatusFound)
+        defer conn.Close()
+        http.Redirect(w,r, "/all-ssc", http.StatusFound)
     }
 }

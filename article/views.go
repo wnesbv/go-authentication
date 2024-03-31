@@ -10,7 +10,6 @@ import (
     
     "github.com/golang-jwt/jwt/v5"
 
-    "go_authentication/connect"
     "go_authentication/authtoken"
 )
 
@@ -83,13 +82,12 @@ func userArt(w http.ResponseWriter, rows *sql.Rows) (list []*Article, err error)
 }
 
 
-func authorArt(w http.ResponseWriter, r *http.Request, claims *authtoken.Claims, id int) (i *Article, err error) {
+func authorArt(w http.ResponseWriter, conn *sql.DB, claims *authtoken.Claims, id int) (i *Article, err error) {
 
     i = &Article{}
     i = new(Article)
     owner := claims.User_id
-    
-    conn := connect.Conn()
+
     row := conn.QueryRow("SELECT * FROM article WHERE id=$1 AND owner=$2", id,owner)
 
     err = row.Scan(
@@ -115,9 +113,8 @@ func authorArt(w http.ResponseWriter, r *http.Request, claims *authtoken.Claims,
 }
 
 
-func idArt(w http.ResponseWriter, id int) (i Article, err error) {
-    
-    conn := connect.Conn()
+func idArt(w http.ResponseWriter, conn *sql.DB, id int) (i Article, err error) {
+
     row := conn.QueryRow("SELECT * FROM article WHERE id=$1", id)
 
     err = row.Scan(

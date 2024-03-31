@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"go_authentication/connect"
 	"go_authentication/authtoken"
 )
 
@@ -20,25 +21,28 @@ func Signup(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 
+		conn := connect.ConnSql()
 		user := User{
 			Username: r.FormValue("username"),
 			Email:    r.FormValue("email"),
 			Password: r.FormValue("password"),
 		}
 
+		start := time.Now()
 		hash, _ := hashPassword(user.Password)
-		fmt.Println("Password:", user.Password)
-		fmt.Println("Hash:    ", hash)
+        elapsed := time.Since(start)
+        fmt.Printf(" hash pass time.. :  %s \n", elapsed)
 
 		sqlstr := `INSERT INTO users (username,email,password,created_at) VALUES ($1,$2,$3,$4)`
 
-		_, err := db.Exec(sqlstr, user.Username, user.Email, hash, time.Now())
+		_, err := conn.Exec(sqlstr, user.Username,user.Email,hash,time.Now())
 
 		if err != nil {
-			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+			fmt.Fprintf(w, "err Exec..! : %+v\n", err)
 			return
 		}
 
+		defer conn.Close()
 		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }
@@ -54,7 +58,8 @@ func UpName(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i,err := profilUser(w,r, cls)
+	conn := connect.ConnSql()
+	i,err := profilUser(w, conn,cls)
 	if err != nil {
 		return
 	}
@@ -74,20 +79,21 @@ func UpName(w http.ResponseWriter, r *http.Request) {
 
 		sqlstr := `UPDATE users SET username=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlstr, cls.User_id, user.Username, time.Now())
+		_, err := conn.Exec(sqlstr, cls.User_id, user.Username, time.Now())
 
 		if err != nil {
-			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+			fmt.Fprintf(w, "err Exec..! : %+v\n", err)
 			return
 		}
-		http.Redirect(w, r, "/alluser", http.StatusFound)
+
+		defer conn.Close()
+		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }
 
 func UpPass(w http.ResponseWriter, r *http.Request) {
 
-	cls,err := authtoken.SqlToken(w, r)
-
+	cls,err := authtoken.SqlToken(w,r)
 	if cls == nil {
 		return
 	}
@@ -95,7 +101,8 @@ func UpPass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i,err := profilUser(w, r, cls)
+	conn := connect.ConnSql()
+	i,err := profilUser(w, conn,cls)
 	if err != nil {
 		return
 	}
@@ -116,20 +123,21 @@ func UpPass(w http.ResponseWriter, r *http.Request) {
 
 		sqlstr := `UPDATE users SET password=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlstr, cls.User_id, hash, time.Now())
+		_, err := conn.Exec(sqlstr, cls.User_id,hash,time.Now())
 
 		if err != nil {
-			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+			fmt.Fprintf(w, "err Exec..! : %+v\n", err)
 			return
 		}
-		http.Redirect(w, r, "/alluser", http.StatusFound)
+
+		defer conn.Close()
+		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }
 
 func EmailSend(w http.ResponseWriter, r *http.Request) {
 
-	cls,err := authtoken.SqlToken(w, r)
-
+	cls,err := authtoken.SqlToken(w,r)
 	if cls == nil {
 		return
 	}
@@ -137,7 +145,8 @@ func EmailSend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	i,err := profilUser(w, r, cls)
+	conn := connect.ConnSql()
+	i,err := profilUser(w, conn,cls)
 	if err != nil {
 		return
 	}
@@ -157,18 +166,19 @@ func EmailSend(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			return
 		}
-		emailerr := emailSend(r, token, email)
+		emailerr := emailSend(r, token,email)
 		if emailerr != nil {
 			return
 		}
 
-		http.Redirect(w, r, "/alluser", http.StatusFound)
+		defer conn.Close()
+		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }
 
 func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
-	cls,err := authtoken.SqlToken(w, r)
+	cls,err := authtoken.SqlToken(w,r)
 	if cls == nil {
 		return
 	}
@@ -188,14 +198,17 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "GET" {
 
+		conn := connect.ConnSql()
 		sqlst := `UPDATE users SET email=$2, updated_at=$3 WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlst, cls.User_id,veri_email.Email,time.Now())
+		_, err := conn.Exec(sqlst, cls.User_id,veri_email.Email,time.Now())
 
 		if err != nil {
-			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+			fmt.Fprintf(w, "err Exec..! : %+v\n", err)
 			return
 		}
+
+		defer conn.Close()
 
 		http.Redirect(w, r, "/alluser", http.StatusFound)
 	}
@@ -204,7 +217,6 @@ func VerifyEmail(w http.ResponseWriter, r *http.Request) {
 func DelUs(w http.ResponseWriter, r *http.Request) {
 
 	cls,err := authtoken.SqlToken(w,r)
-
 	if cls == nil {
 		return
 	}
@@ -227,14 +239,18 @@ func DelUs(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == "POST" {
 
+		conn := connect.ConnSql()
 		sqlstr := `DELETE FROM users WHERE user_id=$1;`
 
-		_, err := db.Exec(sqlstr, cls.User_id)
+		_, err := conn.Exec(sqlstr, cls.User_id)
 
 		if err != nil {
-			fmt.Fprintf(w, "err db.Exec()..! : %+v\n", err)
+			fmt.Fprintf(w, "err Exec..! : %+v\n", err)
 			return
 		}
+
+		defer conn.Close()
+
 		http.Redirect(w,r, "/alluser", http.StatusFound)
 	}
 }

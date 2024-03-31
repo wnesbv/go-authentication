@@ -16,7 +16,6 @@ import (
 
 func Creativity(w http.ResponseWriter, r *http.Request) {
 
-    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -39,6 +38,8 @@ func Creativity(w http.ResponseWriter, r *http.Request) {
             Title: r.FormValue("title"),
             Description: r.FormValue("description"),
         }
+
+        conn := connect.ConnSql()
         sqlstr := `INSERT INTO article (title, description, owner, created_at) VALUES ($1,$2,$3,$4)`
 
         _, err := conn.Exec(sqlstr, i.Title,i.Description,cls.User_id,time.Now())
@@ -47,6 +48,8 @@ func Creativity(w http.ResponseWriter, r *http.Request) {
             fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
+
+        defer conn.Close()
         http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }
@@ -59,7 +62,6 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    conn := connect.Conn()
     cls,err := authtoken.SqlToken(w,r)
     if cls == nil {
         return
@@ -68,7 +70,8 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    art,err := authorArt(w,r, cls,id)
+    conn := connect.ConnSql()
+    art,err := authorArt(w, conn,cls,id)
     if err != nil {
         return
     }
@@ -82,7 +85,7 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/art/update.html", "./tpl/base.html" ))
+        tpl := template.Must(template.ParseFiles( "./tpl/navbar.html", "./tpl/art/update.html", "./tpl/base.html" ))
 
         tpl.ExecuteTemplate(w, "base", art)
     }
@@ -103,6 +106,8 @@ func UpArt(w http.ResponseWriter, r *http.Request) {
             fmt.Fprintf(w, "err Exec..! : %+v\n", err)
             return
         }
+
+        defer conn.Close()
         http.Redirect(w, r, "/author-id-article", http.StatusFound)
     }
 }
@@ -115,7 +120,6 @@ func DelArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -149,6 +153,7 @@ func DelArt(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        conn := connect.ConnSql()
         sqlstr := `DELETE FROM article WHERE id=$1 AND owner=$2;`
         
         _, err := conn.Exec(sqlstr, id,cls.User_id)
@@ -158,7 +163,8 @@ func DelArt(w http.ResponseWriter, r *http.Request) {
             return
         }
         
-        http.Redirect(w, r, "/author-id-article", http.StatusFound)
+        defer conn.Close()
+        http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }
 
@@ -170,7 +176,6 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    conn := connect.Conn()
     cls,err := authtoken.SqlToken(w,r)
     if cls == nil {
         return
@@ -179,7 +184,8 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i,err := authorArt(w,r, cls,id)
+    conn := connect.ConnSql()
+    i,err := authorArt(w, conn,cls,id)
     if err != nil {
         return
     }
@@ -198,13 +204,13 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
         if i.Img != nil {
             err := os.Remove("." + *i.Img) 
             if err != nil { 
-                fmt.Println("err os.Remove().. ", err)
+                fmt.Fprintf(w, "err Remove..! : %+v\n", err)
             }
         }
 
         file, handler, err := r.FormFile("file")
         if err != nil{
-            fmt.Println("Error Data retrieving", err)
+            fmt.Fprintf(w, "Error Data retrieving..! : %+v\n", err)
             return
         }
         defer file.Close()
@@ -224,11 +230,11 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
 
         mkdirerr := os.MkdirAll(fpath, 0750)
         if mkdirerr != nil {
-            fmt.Println("Error os.MkdirAll():", mkdirerr)
+            fmt.Fprintf(w, "Error MkdirAll..! : %+v\n", mkdirerr)
         }
         img,err := os.Create(fname)
         if err != nil {
-            fmt.Println("Error os.Create():", err)
+            fmt.Fprintf(w, "Error Create..! : %+v\n", err)
         }
         defer img.Close()
 
@@ -246,6 +252,7 @@ func ImgArt(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        defer conn.Close()
         http.Redirect(w,r, fname, http.StatusFound)
     }
 }
@@ -258,7 +265,6 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    conn := connect.Conn()
     cls,err := authtoken.OnToken(w,r)
     if cls == nil {
         return
@@ -267,7 +273,8 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    i,err := authorArt(w,r, cls,id)
+    conn := connect.ConnSql()
+    i,err := authorArt(w, conn,cls,id)
     if err != nil {
         return
     }
@@ -297,6 +304,7 @@ func DelImgArt(w http.ResponseWriter, r *http.Request) {
             return
         }
 
+        defer conn.Close()
         http.Redirect(w,r, "/author-id-article", http.StatusFound)
     }
 }

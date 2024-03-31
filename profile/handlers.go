@@ -6,6 +6,7 @@ import (
     "html/template"
     "runtime"
 
+    "go_authentication/connect"
     "go_authentication/authtoken"
 )
 
@@ -23,7 +24,8 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/profile/all.html", "./tpl/base.html" ))
 
-        rows,err := db.Query("SELECT user_id,username,email FROM users")
+        conn := connect.ConnSql()
+        rows,err := qAllProfile(w, conn)
 
         if err != nil {
             fmt.Fprintf(w, "Error: Query()..! : %+v\n", err)
@@ -44,9 +46,9 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         for rows.Next() {
             i := new(UserList)
 
-            err := rows.Scan(&i.User_id, &i.Username, &i.Email)
+            err := rows.Scan(&i.User_id,&i.Username,&i.Email)
             if err != nil {
-                fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
+                fmt.Fprintf(w, "Error: Scan..! : %+v\n", err)
                 return
             }
             list = append(list, i)
@@ -66,7 +68,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
             err := rows.Scan(&i.User_id,&i.Username,&i.Email)
 
             if err != nil {
-                fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
+                fmt.Fprintf(w, "Error: Scan..! : %+v\n", err)
                 return
             }
             list = append(list, i)
@@ -80,9 +82,8 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         if err = rows.Close(); err != nil {
             fmt.Fprintf(w, "Error: sql..! : %+v\n", err)
         }
-
-    fmt.Println(" Alluser goroutine..", runtime.NumGoroutine())
-
+        defer conn.Close()
+        fmt.Println(" All user goroutine..", runtime.NumGoroutine())
     }
 }
 
@@ -91,10 +92,11 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
 
     if r.Method == "GET" {
 
-        rows,err := db.Query("SELECT username,email FROM users")
+        conn := connect.ConnSql()
+        rows,err := conn.Query("SELECT username,email FROM users")
 
         if err != nil {
-            fmt.Fprintf(w, "Error: db.Query()..! : %+v\n", err)
+            fmt.Fprintf(w, "Error: Query..! : %+v\n", err)
             return
         }
         defer rows.Close()
@@ -106,7 +108,7 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
             err := rows.Scan(&data.Username, &data.Email)
 
             if err != nil {
-                fmt.Fprintf(w, "Error: Scan()..! : %+v\n", err)
+                fmt.Fprintf(w, "Error: Scan..! : %+v\n", err)
                 return
             }
             list = append(list, data)
@@ -115,6 +117,8 @@ func Alluser(w http.ResponseWriter, r *http.Request) {
         if err = rows.Close(); err != nil {
             fmt.Fprintf(w, "Error: sql..! : %+v\n", err)
         }
+
+        defer conn.Close()
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/profile/all.html", "./tpl/base.html" ))
 

@@ -6,6 +6,7 @@ import (
     "html/template"
 
     "go_authentication/options"
+    "go_authentication/connect"
     "go_authentication/authtoken"
 )
 
@@ -22,7 +23,8 @@ func OwrAllSsc(w http.ResponseWriter, r *http.Request) {
             return
         }
 
-        rows,err := qsOwSsc(w, cls.User_id)
+        conn := connect.ConnSql()
+        rows,err := qsOwSsc(w, conn,cls.User_id)
         if err != nil {
             return
         }
@@ -30,6 +32,7 @@ func OwrAllSsc(w http.ResponseWriter, r *http.Request) {
         if err != nil {
             return
         }
+        defer conn.Close()
 
         tpl := template.Must(template.ParseFiles("./tpl/navbar.html", "./tpl/owner_ssc/all.html", "./tpl/base.html" ))
 
@@ -53,10 +56,12 @@ func DetOwrSsc(w http.ResponseWriter, r *http.Request) {
         }
         
         owner := cls.User_id
-        i,err := ownerIdSsc(w, id,owner)
+        conn := connect.ConnSql()
+        i,err := ownerIdSsc(w, conn,id,owner)
         if err != nil {
             return
         }
+        defer conn.Close()
 
         type ListData struct {
             Auth string
